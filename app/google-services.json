@@ -12,7 +12,20 @@
           "package_name": "com.markusw.lambda"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "992816761973-etra5afjis20gpmgjo7hqlfm4q5qc8mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.markusw.lambda",
+            "certificate_hash": "3a6334b9d7da974a934b091b6de205b3510eed4c"
+          }
+        },
+        {
+          "client_id": "992816761973-vedcb03k8h0t27c8k3m7023irffjiba1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDb5fk1oScYshSuKEAxL6ucpdiHqbA9gH4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992816761973-vedcb03k8h0t27c8k3m7023irffjiba1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
