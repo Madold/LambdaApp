@@ -29,8 +29,9 @@ class StreamVideoClient(
                     type = UserType.Guest
                 )
             ).build()
+
+            callToRoom("main-room")
         }
-        callToRoom("main-room")
     }
 
     override fun callToRoom(roomId: String) {
