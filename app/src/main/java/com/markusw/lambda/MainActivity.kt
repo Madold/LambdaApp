@@ -11,10 +11,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.markusw.lambda.auth.presentation.LoginScreen
 import com.markusw.lambda.auth.presentation.LoginViewModel
 import com.markusw.lambda.auth.presentation.LoginViewModelEvent
 import com.markusw.lambda.core.presentation.Screens
+import com.markusw.lambda.home.presentation.HomeScreen
 import com.markusw.lambda.ui.theme.LambdaAppTheme
 import com.markusw.lambda.video.presentation.VideoCallScreen
 import com.markusw.lambda.video.presentation.VideoCallViewModel
@@ -28,6 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val isUserLoggedIn = Firebase.auth.currentUser != null
+
         setContent {
             val navController = rememberNavController()
 
@@ -37,7 +43,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = Screens.Login.route
+                    startDestination = if (isUserLoggedIn) Screens.Home.route else Screens.Login.route
                 ) {
                     composable(route = Screens.Login.route) {
                         val viewModel = hiltViewModel<LoginViewModel>()
@@ -49,8 +55,11 @@ class MainActivity : ComponentActivity() {
 
                                     }
                                     LoginViewModelEvent.AuthSuccessful -> {
-                                        //TODO: NAVIGATE TO HOME SCREEN
-                                        println("Auth success")
+                                        navController.navigate(Screens.Home.route) {
+                                            popUpTo(Screens.Login.route) {
+                                                inclusive = true
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -59,6 +68,10 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             onEvent = viewModel::onEvent
                         )
+                    }
+
+                    composable(route = Screens.Home.route) {
+                        HomeScreen()
                     }
 
                     composable(route = Screens.Video.route) {

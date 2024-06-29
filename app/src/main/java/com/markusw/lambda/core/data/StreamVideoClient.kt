@@ -29,8 +29,6 @@ class StreamVideoClient(
                     type = UserType.Guest
                 )
             ).build()
-
-            callToRoom("main-room")
         }
     }
 
