@@ -50,7 +50,10 @@ class VideoCallViewModel @Inject constructor(
     }
 
     private fun joinCall() {
-        viewModelScope.launch {
+        if (state.value.callStatus == CallStatus.Running) return
+
+
+        viewModelScope.launch(Dispatchers.IO) {
             when (val result = videoClient.joinCall()) {
                 is Result.Error -> {
                     _state.update {

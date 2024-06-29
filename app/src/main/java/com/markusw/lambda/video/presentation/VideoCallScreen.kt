@@ -5,6 +5,8 @@ import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,70 +24,73 @@ fun VideoCallScreen(
     modifier: Modifier = Modifier
 ) {
 
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-
-        when {
-            state.callStatus == CallStatus.Joining -> {
-                Text(text = "Joining Call")
-            }
-            state.callStatus == CallStatus.Ended -> {
-                Text(text = "Call ended")
-            }
-            else -> {
-                val basePermissions = listOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO,
-                )
-                val bluetoothConnectPermission = if(Build.VERSION.SDK_INT >= 31) {
-                    listOf(Manifest.permission.BLUETOOTH_CONNECT)
-                } else {
-                    emptyList()
+    Scaffold(modifier = modifier) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            when (state.callStatus) {
+                CallStatus.Joining -> {
+                    Text(text = "Joining Call")
                 }
-                val notificationPermission = if(Build.VERSION.SDK_INT >= 33) {
-                    listOf(Manifest.permission.POST_NOTIFICATIONS)
-                } else {
-                    emptyList()
+                CallStatus.Ended -> {
+                    Text(text = "Call ended")
                 }
-                val context = LocalContext.current
+                else -> {
+                    val basePermissions = listOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.RECORD_AUDIO,
+                    )
+                    val bluetoothConnectPermission = if(Build.VERSION.SDK_INT >= 31) {
+                        listOf(Manifest.permission.BLUETOOTH_CONNECT)
+                    } else {
+                        emptyList()
+                    }
+                    val notificationPermission = if(Build.VERSION.SDK_INT >= 33) {
+                        listOf(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        emptyList()
+                    }
+                    val context = LocalContext.current
 
-                state.call?.let {
-                    CallContent(
-                        call = it,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        permissions = rememberCallPermissionsState(
-                            call = state.call,
-                            permissions = basePermissions + bluetoothConnectPermission + notificationPermission,
-                            onPermissionsResult = { permissions ->
-                                if (permissions.values.contains(false)) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please grant all permissions to use this app.",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    onEvent(VideoCallEvent.JoinCall)
+                    state.call?.let {
+                        CallContent(
+                            call = it,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            permissions = rememberCallPermissionsState(
+                                call = state.call,
+                                permissions = basePermissions + bluetoothConnectPermission + notificationPermission,
+                                onPermissionsResult = { permissions ->
+                                    if (permissions.values.contains(false)) {
+                                        Toast.makeText(
+                                            context,
+                                            "Please grant all permissions to use this app.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    } else {
+                                        onEvent(VideoCallEvent.JoinCall)
+                                    }
                                 }
-                            }
-                        ),
-                        onCallAction = { action ->
-                            if (action == LeaveCall) {
+                            ),
+                            onCallAction = { action ->
+                                if (action == LeaveCall) {
+                                    onEvent(VideoCallEvent.Disconnect)
+                                }
+
+                                DefaultOnCallActionHandler.onCallAction(state.call, action)
+                            },
+                            onBackPressed = {
                                 onEvent(VideoCallEvent.Disconnect)
                             }
-
-                            DefaultOnCallActionHandler.onCallAction(state.call, action)
-                        },
-                        onBackPressed = {
-                            onEvent(VideoCallEvent.Disconnect)
-                        }
-                    )
+                        )
+                    }
                 }
             }
-
         }
     }
+
+
 
 }
