@@ -32,7 +32,8 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             LambdaAppTheme(
-                darkTheme = false
+                darkTheme = false,
+                dynamicColor = false
             ) {
                 NavHost(
                     navController = navController,

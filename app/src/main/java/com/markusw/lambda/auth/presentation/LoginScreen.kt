@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -150,9 +151,8 @@ fun LoginScreen(
             ) {
                 Text(text = "O inicia sesión con")
                 IconButton(
-                    modifier = Modifier.shadow(
-                        elevation = 12.dp,
-                        shape = CircleShape
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     onClick = {
                         coroutineScope.launch {
