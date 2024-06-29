@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.com.google.firebase.auth)
     implementation(libs.com.google.android.gms.play.services.auth)
+    implementation(libs.com.google.firebase.firestore)
 
     //Test implementations
     testImplementation(libs.junit)
