@@ -46,6 +46,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 com-google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 com-google-android-gms-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 com-google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+com-google-firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.com.google.firebase.auth)
     implementation(libs.com.google.android.gms.play.services.auth)
     implementation(libs.com.google.firebase.firestore)
+    implementation(libs.com.google.firebase.storage)
 
     //Test implementations
     testImplementation(libs.junit)
