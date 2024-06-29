@@ -11,9 +11,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.markusw.lambda.auth.presentation.AuthScreen
-import com.markusw.lambda.auth.presentation.AuthViewModel
-import com.markusw.lambda.auth.presentation.AuthViewModelEvent
+import com.markusw.lambda.auth.presentation.LoginScreen
+import com.markusw.lambda.auth.presentation.LoginViewModel
+import com.markusw.lambda.auth.presentation.LoginViewModelEvent
 import com.markusw.lambda.core.presentation.Screens
 import com.markusw.lambda.ui.theme.LambdaAppTheme
 import com.markusw.lambda.video.presentation.VideoCallScreen
@@ -36,28 +36,26 @@ class MainActivity : ComponentActivity() {
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = Screens.Auth.route
+                    startDestination = Screens.Login.route
                 ) {
-                    composable(route = Screens.Auth.route) {
-                        val viewModel = hiltViewModel<AuthViewModel>()
-                        val state by viewModel.state.collectAsStateWithLifecycle()
+                    composable(route = Screens.Login.route) {
+                        val viewModel = hiltViewModel<LoginViewModel>()
 
                         LaunchedEffect(key1 = Unit) {
                             viewModel.events.collectLatest { viewModelEvent ->
                                 when (viewModelEvent) {
-                                    is AuthViewModelEvent.VideoClientInitialized -> {
-                                        navController.navigate(Screens.Video.route) {
-                                            popUpTo(Screens.Auth.route) {
-                                                inclusive = true
-                                            }
-                                        }
+                                    is LoginViewModelEvent.AuthFailed -> {
+
+                                    }
+                                    LoginViewModelEvent.AuthSuccessful -> {
+                                        //TODO: NAVIGATE TO HOME SCREEN
+                                        println("Auth success")
                                     }
                                 }
                             }
                         }
 
-                        AuthScreen(
-                            state = state,
+                        LoginScreen(
                             onEvent = viewModel::onEvent
                         )
                     }
@@ -70,11 +68,7 @@ class MainActivity : ComponentActivity() {
                             viewModel.events.collectLatest { viewModelEvent ->
                                 when (viewModelEvent) {
                                     VideoCallViewModelEvent.CallLeaved -> {
-                                        navController.navigate(Screens.Auth.route) {
-                                            popUpTo(Screens.Video.route) {
-                                                inclusive = true
-                                            }
-                                        }
+                                        //TODO: Navigate back to home
                                     }
                                 }
                             }
