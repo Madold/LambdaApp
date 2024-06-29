@@ -8,4 +8,5 @@ interface VideoClient {
     suspend fun joinCall(): Result<Call>
     fun disconnect(): Result<Unit>
     fun getCall(): Call?
+    fun callToRoom(roomId: String)
 }

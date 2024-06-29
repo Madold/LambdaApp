@@ -29,10 +29,12 @@ class StreamVideoClient(
                     type = UserType.Guest
                 )
             ).build()
-
-            call = client?.call("default", "main-room")
-            println("Video client initialized")
         }
+        callToRoom("main-room")
+    }
+
+    override fun callToRoom(roomId: String) {
+        call = client?.call("default", roomId)
     }
 
     override suspend fun joinCall(): Result<Call> {
