@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.bundles.stream)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.com.google.firebase.auth)
+    implementation(libs.com.google.android.gms.play.services.auth)
 
     //Test implementations
     testImplementation(libs.junit)

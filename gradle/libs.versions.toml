@@ -16,6 +16,7 @@ daggerHilt = "2.49"
 navigationCompose = "2.7.7"
 stream = "0.5.8"
 serialization = "1.6.3"
+playServicesAuth = "20.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +43,8 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 stream-video = { module = "io.getstream:stream-video-android-core", version.ref = "stream" }
 stream-video-android-ui-compose = { module = "io.getstream:stream-video-android-ui-compose", version.ref = "stream" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
+com-google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+com-google-android-gms-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
