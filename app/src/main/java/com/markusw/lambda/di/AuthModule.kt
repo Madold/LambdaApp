@@ -6,6 +6,7 @@ import com.markusw.lambda.auth.data.FirebaseAuthService
 import com.markusw.lambda.auth.data.repository.AndroidAuthRepository
 import com.markusw.lambda.auth.domain.AuthService
 import com.markusw.lambda.auth.domain.repository.AuthRepository
+import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +25,11 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authService: AuthService): AuthRepository {
-        return AndroidAuthRepository(authService)
+    fun provideAuthRepository(
+        authService: AuthService,
+        remoteDatabase: RemoteDatabase
+    ): AuthRepository {
+        return AndroidAuthRepository(authService, remoteDatabase)
     }
 
 }
