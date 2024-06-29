@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992816761973",
+    "project_id": "lambdaapp-ddc3e",
+    "storage_bucket": "lambdaapp-ddc3e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992816761973:android:cbe794380131fd628d7c3c",
+        "android_client_info": {
+          "package_name": "com.markusw.lambda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb5fk1oScYshSuKEAxL6ucpdiHqbA9gH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
