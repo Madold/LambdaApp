@@ -52,8 +52,7 @@ fun TextField(
         visualTransformation = visualTransformation,
         singleLine = singleLine,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
         ),
         interactionSource = interactionSource,
         maxLines = maxLines,
