@@ -1,0 +1,39 @@
+-- user_entity Table
+CREATE TABLE user_entity (
+    id INTEGER PRIMARY KEY,
+    displayName TEXT,
+    photoUrl TEXT,
+    email TEXT
+);
+
+-- mentoring_entity Table
+CREATE TABLE mentoring_entity (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    price REAL,
+    requesterId INTEGER,
+    authorId INTEGER,
+    coverUrl TEXT,
+    description TEXT,
+    FOREIGN KEY (requesterId) REFERENCES user_entity(id),
+    FOREIGN KEY (authorId) REFERENCES user_entity(id)
+);
+
+-- donation_entity Table
+CREATE TABLE donation_entity (
+    userId INTEGER,
+    mentoringId INTEGER,
+    amount REAL,
+    PRIMARY KEY (userId, mentoringId),
+    FOREIGN KEY (userId) REFERENCES user_entity(id),
+    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)
+);
+
+-- attends_entity Table
+CREATE TABLE attends_entity (
+    userId INTEGER,
+    mentoringId INTEGER,
+    PRIMARY KEY (userId, mentoringId),
+    FOREIGN KEY (userId) REFERENCES user_entity(id),
+    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)
+);

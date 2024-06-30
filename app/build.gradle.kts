@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     id(libs.plugins.dagger.hilt.plugin.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -72,6 +73,8 @@ dependencies {
     implementation(libs.com.google.android.gms.play.services.auth)
     implementation(libs.com.google.firebase.firestore)
     implementation(libs.com.google.firebase.storage)
+    implementation(libs.app.cash.sqldelight.android.driver)
+    implementation(libs.app.cash.sqldelight.coroutines.extensions)
 
     //Test implementations
     testImplementation(libs.junit)
@@ -81,4 +84,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+sqldelight {
+    databases {
+        create("LambdaDatabase") {
+            packageName.set("com.markusw.lambda.db")
+        }
+    }
 }

@@ -17,6 +17,7 @@ navigationCompose = "2.7.7"
 stream = "0.5.8"
 serialization = "1.6.3"
 playServicesAuth = "20.4.1"
+sqlDelight = "2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,8 @@ com-google-firebase-auth = { group = "com.google.firebase", name = "firebase-aut
 com-google-android-gms-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 com-google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 com-google-firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+app-cash-sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
+app-cash-sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -56,6 +59,7 @@ google-services = { id = "com.google.gms.google-services", version.ref = "gmsGoo
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dagger-hilt-plugin = { id = "dagger.hilt.android.plugin", version.ref = "daggerHilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 
 [bundles]
 stream = ["stream-video", "stream-video-android-ui-compose"]
