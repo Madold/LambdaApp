@@ -23,7 +23,7 @@ class FireStoreDatabase(
 
     override fun getUsers(): Flow<List<User>> {
         return callbackFlow {
-            val snapshotListener =  firestore
+            val snapshotListener = firestore
                 .collection(USERS_COLLECTIONS)
                 .addSnapshotListener { value, error ->
                     error?.let { close(it) }
@@ -72,9 +72,11 @@ class FireStoreDatabase(
                     error?.let { close(it) }
 
                     value?.let { querySnapshot ->
-                        trySend(querySnapshot
+                        trySend(
+                            querySnapshot
                             .toObjects(MentoringDto::class.java)
-                            .filter { it.roomId.isNotBlank() })
+                            .filter { it.roomId.isNotBlank() }
+                        )
                     }
                 }
 
