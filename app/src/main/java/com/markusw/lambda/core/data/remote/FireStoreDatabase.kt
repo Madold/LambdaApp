@@ -73,7 +73,8 @@ class FireStoreDatabase(
 
                     value?.let { querySnapshot ->
                         trySend(querySnapshot
-                            .toObjects(MentoringDto::class.java))
+                            .toObjects(MentoringDto::class.java)
+                            .filter { it.roomId.isNotBlank() })
                     }
                 }
 
