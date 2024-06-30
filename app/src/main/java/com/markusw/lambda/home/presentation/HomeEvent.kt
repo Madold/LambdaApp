@@ -9,4 +9,5 @@ sealed interface HomeEvent {
     data class ChangeDonationAmount(val amount: Long): HomeEvent
     data class ChangeMentoringCoverUrl(val coverUrl: String): HomeEvent
     data object CreateMentoringRequest: HomeEvent
+    data class ChangeMentoringRequesterDescription(val description: String): HomeEvent
 }

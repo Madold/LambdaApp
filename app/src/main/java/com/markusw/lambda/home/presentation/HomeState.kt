@@ -7,7 +7,9 @@ data class HomeState(
     val isRequestTutoringDialogVisible: Boolean = false,
     val mentoringTitle: String = "",
     val mentoringDescription: String = "",
+    val mentoringRequesterDescription: String = "",
     val mentoringCoverUrl: String = "",
     val mentoringPrice: Long = 0,
-    val donationAmount: Long = 0
+    val donationAmount: Long = 0,
+    val isSavingMentoring: Boolean = false
 )

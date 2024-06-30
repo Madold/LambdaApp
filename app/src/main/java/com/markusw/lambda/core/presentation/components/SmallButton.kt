@@ -15,6 +15,7 @@ fun SmallButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit,
 ) {
 
@@ -23,7 +24,8 @@ fun SmallButton(
         modifier = modifier,
         content = content,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        colors = colors
+        colors = colors,
+        enabled = enabled
     )
 
 }

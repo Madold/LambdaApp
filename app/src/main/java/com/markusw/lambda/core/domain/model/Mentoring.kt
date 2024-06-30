@@ -7,6 +7,7 @@ data class Mentoring(
     val requester: User = User(),
     val requesterDescription: String = "",
     val author: User? = null,
+    //PRIMARY KEY
     val roomId: String = "",
     val title: String = "",
     val description: String = "",

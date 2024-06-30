@@ -1,16 +1,19 @@
 package com.markusw.lambda.home.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +41,9 @@ fun TutoringRequestDialog(
 //    )
 
     Dialog(onDismissRequest = {
-        onEvent(HomeEvent.ChangeRequestTutoringDialogVisibility(false))
+        if (!state.isSavingMentoring) {
+            onEvent(HomeEvent.ChangeRequestTutoringDialogVisibility(false))
+        }
     }) {
 
         Card {
@@ -63,8 +68,8 @@ fun TutoringRequestDialog(
                     }
                 )
                 TextField(
-                    value = state.mentoringDescription,
-                    onValueChange = { onEvent(HomeEvent.ChangeMentoringDescription(it)) },
+                    value = state.mentoringRequesterDescription,
+                    onValueChange = { onEvent(HomeEvent.ChangeMentoringRequesterDescription(it)) },
                     label = {
                         Text(text = "Descripción")
                     }
@@ -92,21 +97,30 @@ fun TutoringRequestDialog(
                 ) {
                     SmallButton(
                         onClick = {
-                            onEvent(
-                                HomeEvent.ChangeRequestTutoringDialogVisibility(
-                                    false
-                                )
-                            )
+                            if (!state.isSavingMentoring) {
+                                onEvent(HomeEvent.ChangeRequestTutoringDialogVisibility(false))
+                            }
                         },
-                        colors = ButtonDefaults.outlinedButtonColors()
+                        colors = ButtonDefaults.outlinedButtonColors(),
+                        enabled = !state.isSavingMentoring
                     ) {
                         Text(text = "Cancelar")
                     }
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
-                    SmallButton(onClick = { onEvent(HomeEvent.CreateMentoringRequest) }) {
-                        Text(text = "Solicitar")
+
+                    SmallButton(
+                        onClick = { onEvent(HomeEvent.CreateMentoringRequest) },
+                        enabled = !state.isSavingMentoring
+                    ) {
+                        Text(text = if (state.isSavingMentoring) "Solicitando" else "Solicitar")
+                        AnimatedVisibility(visible = state.isSavingMentoring) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.surface,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
 
