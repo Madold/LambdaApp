@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +31,9 @@ fun LiveTutorialsView(
     onEvent: (HomeEvent) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         TopAppBar(
             windowInsets = WindowInsets(top = 0.dp, bottom = 0.dp),
@@ -58,6 +62,7 @@ fun LiveTutorialsView(
             }
         )
 
+        Text(text = state.tutorials.toString())
 
     }
 

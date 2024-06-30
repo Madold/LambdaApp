@@ -9,6 +9,9 @@ CREATE TABLE user_entity (
 getUsers:
 SELECT * FROM user_entity;
 
+getUserById:
+SELECT * FROM user_entity WHERE id = ?;
+
 insertUser:
 INSERT INTO user_entity (id, displayName, photoUrl, email)
 VALUES (?, ?, ?, ?);
@@ -18,16 +21,49 @@ DELETE FROM user_entity;
 
 -- mentoring_entity Table
 CREATE TABLE mentoring_entity (
-    id TEXT PRIMARY KEY NOT NULL,
+    roomId TEXT PRIMARY KEY NOT NULL,
     title TEXT NOT NULL,
-    price INTEGER,
+    price INTEGER NOT NULL,
     requesterId TEXT NOT NULL,
     authorId TEXT,
     coverUrl TEXT NOT NULL,
     description TEXT NOT NULL,
+    requesterDescription TEXT NOT NULL,
     FOREIGN KEY (requesterId) REFERENCES user_entity(id),
     FOREIGN KEY (authorId) REFERENCES user_entity(id)
 );
+
+insertMentoring:
+INSERT INTO mentoring_entity (roomId, title, price, requesterId, requesterDescription, description, coverUrl)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+getAllTutorialsWithDetails:
+SELECT
+    m.roomId,
+    m.title,
+    m.price,
+    m.requesterId,
+    m.authorId,
+    m.coverUrl,
+    m.description,
+    m.requesterDescription,
+    IFNULL(SUM(d.amount), 0) AS totalRevenue
+FROM mentoring_entity m
+LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
+GROUP BY m.roomId;
+
+getParticipantsByMentoringId:
+SELECT
+    u.id,
+    u.displayName,
+    u.photoUrl,
+    u.email
+FROM attends_entity a
+JOIN user_entity u ON a.userId = u.id
+WHERE a.mentoringId = ?;
+
+deleteAllMentoring:
+DELETE FROM mentoring_entity;
 
 -- donation_entity Table
 CREATE TABLE donation_entity (
@@ -36,7 +72,7 @@ CREATE TABLE donation_entity (
     amount INTEGER NOT NULL,
     PRIMARY KEY (userId, mentoringId),
     FOREIGN KEY (userId) REFERENCES user_entity(id),
-    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)
+    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
 );
 
 -- attends_entity Table
@@ -45,5 +81,5 @@ CREATE TABLE attends_entity (
     mentoringId TEXT NOT NULL,
     PRIMARY KEY (userId, mentoringId),
     FOREIGN KEY (userId) REFERENCES user_entity(id),
-    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)
+    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
 );

@@ -28,9 +28,11 @@ class HomeViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(HomeState())
     private val _users = usersRepository.getUsers()
-    val state = combine(_state, _users) { state, users ->
+    private val _tutorials = mentoringRepository.getTutoringSessions()
+    val state = combine(_state, _users, _tutorials) { state, users, tutorials ->
         state.copy(
-            users = users
+            users = users,
+            tutorials = tutorials
         )
     }.stateIn(
         viewModelScope,

@@ -50,7 +50,7 @@ class FireStoreDatabase(
             .await()
     }
 
-    override suspend fun saveMentoring(mentoring: Mentoring) {
+    override suspend fun insertMentoring(mentoring: Mentoring) {
 
         val docRef = firestore
             .collection(TUTORING)
@@ -64,31 +64,16 @@ class FireStoreDatabase(
         ).await()
     }
 
-    override fun getTutoringSessions(): Flow<List<Mentoring>> {
+    override fun getTutoringSessionsDto(): Flow<List<MentoringDto>> {
         return callbackFlow {
             val snapshotListener = firestore
                 .collection(TUTORING)
                 .addSnapshotListener { value, error ->
-
                     error?.let { close(it) }
 
                     value?.let { querySnapshot ->
-
-                        val mentoringDto = querySnapshot
-                            .toObjects(MentoringDto::class.java)
-
-                        val tutoring =  mentoringDto.map { dto ->
-                            Mentoring(
-                                title = dto.title,
-                                roomId = dto.roomId,
-                                price = dto.price,
-                                requesterDescription = dto.requesterDescription,
-                                description = dto.description,
-                                coverUrl = dto.coverUrl
-                            )
-                        }
-
-                        trySend(tutoring)
+                        trySend(querySnapshot
+                            .toObjects(MentoringDto::class.java))
                     }
                 }
 

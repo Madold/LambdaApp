@@ -9,6 +9,7 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.domain.repository.UsersRepository
 import com.markusw.lambda.core.utils.Result
+import com.markusw.lambda.core.utils.ext.isDeviceOnline
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -32,31 +33,11 @@ class AndroidUsersRepository(
 
         val localUsersFlow = localDatabase.getUsers()
 
-        return if (isDeviceOnline()) {
+        return if (context.isDeviceOnline()) {
             remoteUsersFlow
         } else {
             localUsersFlow
         }
-    }
-
-    private fun isDeviceOnline(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                return true
-            }
-        }
-        return false
     }
 
     override suspend fun saveUser(user: User): Result<Unit> {

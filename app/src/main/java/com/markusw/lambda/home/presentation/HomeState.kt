@@ -1,9 +1,11 @@
 package com.markusw.lambda.home.presentation
 
+import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 
 data class HomeState(
     val users: List<User> = emptyList(),
+    val tutorials: List<Mentoring> = emptyList(),
     val isRequestTutoringDialogVisible: Boolean = false,
     val mentoringTitle: String = "",
     val mentoringDescription: String = "",
