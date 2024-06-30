@@ -33,13 +33,6 @@ fun TutoringRequestDialog(
     onEvent: (HomeEvent) -> Unit
 ) {
 
-//    val imagePickerLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickVisualMedia(),
-//        onResult = { coverUri ->
-//            onEvent(HomeEvent.ChangeMentoringCoverUrl(coverUri.toString()))
-//        }
-//    )
-
     Dialog(onDismissRequest = {
         if (!state.isSavingMentoring) {
             onEvent(HomeEvent.ChangeRequestTutoringDialogVisibility(false))
@@ -74,21 +67,6 @@ fun TutoringRequestDialog(
                         Text(text = "Descripción")
                     }
                 )
-
-//                SmallButton(onClick = { imagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
-//                    Text(text = "Escojer portada")
-//                }
-//
-//                AsyncImage(
-//                    model = Uri.parse(state.mentoringCoverUrl),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(10.dp))
-//                    ,
-//                    contentScale = ContentScale.FillWidth,
-//                    error = painterResource(id = R.drawable.pick_image),
-//                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

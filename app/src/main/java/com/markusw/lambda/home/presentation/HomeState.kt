@@ -13,5 +13,5 @@ data class HomeState(
     val mentoringCoverUrl: String = "",
     val mentoringPrice: Long = 0,
     val donationAmount: Long = 0,
-    val isSavingMentoring: Boolean = false
+    val isSavingMentoring: Boolean = false,
 )

@@ -2,6 +2,7 @@
 
 package com.markusw.lambda.home.presentation.views
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,6 +15,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -21,6 +27,8 @@ import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.ExtraSmallButton
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
+import com.markusw.lambda.home.presentation.components.ProvideMentoringDialog
+import com.markusw.lambda.home.presentation.components.TutoringRequestCard
 import com.markusw.lambda.home.presentation.components.TutoringRequestDialog
 
 @Composable
@@ -28,6 +36,11 @@ fun TutoringRequestView(
     state: HomeState,
     onEvent: (HomeEvent) -> Unit
 ) {
+
+    val pendingRequests = remember(state.tutorials) {
+        state.tutorials.filter { it.author == null }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -49,9 +62,17 @@ fun TutoringRequestView(
         )
 
         LazyColumn(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(state.tutorials, key = { it.roomId }) { mentoring ->
+            items(pendingRequests, key = { it.roomId }) { mentoring ->
+
+
+                TutoringRequestCard(
+                    mentoring = mentoring,
+                    onEvent = onEvent,
+                )
 
             }
         }

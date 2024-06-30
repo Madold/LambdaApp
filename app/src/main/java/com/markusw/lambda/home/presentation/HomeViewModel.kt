@@ -132,6 +132,9 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            is HomeEvent.StartLiveMentoring -> {
+
+            }
         }
     }
 

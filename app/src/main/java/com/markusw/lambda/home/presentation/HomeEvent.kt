@@ -1,5 +1,7 @@
 package com.markusw.lambda.home.presentation
 
+import com.markusw.lambda.core.domain.model.Mentoring
+
 sealed interface HomeEvent {
 
     data class ChangeRequestTutoringDialogVisibility(val isVisible: Boolean): HomeEvent
@@ -10,4 +12,5 @@ sealed interface HomeEvent {
     data class ChangeMentoringCoverUrl(val coverUrl: String): HomeEvent
     data object CreateMentoringRequest: HomeEvent
     data class ChangeMentoringRequesterDescription(val description: String): HomeEvent
+    data class StartLiveMentoring(val mentoring: Mentoring): HomeEvent
 }
