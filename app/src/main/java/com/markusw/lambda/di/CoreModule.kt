@@ -1,14 +1,18 @@
 package com.markusw.lambda.di
 
 import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.markusw.lambda.core.data.StreamVideoClient
+import com.markusw.lambda.core.data.local.AndroidLocalDatabase
 import com.markusw.lambda.core.data.remote.FireStoreDatabase
 import com.markusw.lambda.core.data.repository.AndroidUsersRepository
 import com.markusw.lambda.core.domain.VideoClient
+import com.markusw.lambda.core.domain.local.LocalDatabase
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.domain.repository.UsersRepository
+import com.markusw.lambda.db.LambdaDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,8 +38,22 @@ object CoreModule {
 
     @Provides
     @Singleton
-    fun provideUsersRepository(remoteDatabase: RemoteDatabase): UsersRepository {
-        return AndroidUsersRepository(remoteDatabase)
+    fun provideUsersRepository(
+        remoteDatabase: RemoteDatabase,
+        localDatabase: LocalDatabase,
+        @ApplicationContext context: Context
+    ): UsersRepository {
+        return AndroidUsersRepository(
+            remoteDatabase,
+            localDatabase,
+            context
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocalDatabase(sqlDriver: SqlDriver): LocalDatabase {
+        return AndroidLocalDatabase(LambdaDatabase(sqlDriver))
     }
 
 }

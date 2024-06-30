@@ -1,29 +1,36 @@
 -- user_entity Table
 CREATE TABLE user_entity (
-    id INTEGER PRIMARY KEY,
-    displayName TEXT,
-    photoUrl TEXT,
-    email TEXT
+    id TEXT PRIMARY KEY NOT NULL,
+    displayName TEXT NOT NULL,
+    photoUrl TEXT NOT NULL,
+    email TEXT NOT NULL
 );
+
+getUsers:
+SELECT * FROM user_entity;
+
+insertUser:
+INSERT INTO user_entity (id, displayName, photoUrl, email)
+VALUES (?, ?, ?, ?);
 
 -- mentoring_entity Table
 CREATE TABLE mentoring_entity (
-    id INTEGER PRIMARY KEY,
-    title TEXT,
-    price REAL,
-    requesterId INTEGER,
-    authorId INTEGER,
-    coverUrl TEXT,
-    description TEXT,
+    id TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    price INTEGER,
+    requesterId TEXT NOT NULL,
+    authorId TEXT,
+    coverUrl TEXT NOT NULL,
+    description TEXT NOT NULL,
     FOREIGN KEY (requesterId) REFERENCES user_entity(id),
     FOREIGN KEY (authorId) REFERENCES user_entity(id)
 );
 
 -- donation_entity Table
 CREATE TABLE donation_entity (
-    userId INTEGER,
-    mentoringId INTEGER,
-    amount REAL,
+    userId TEXT NOT NULL,
+    mentoringId TEXT NOT NULL,
+    amount INTEGER NOT NULL,
     PRIMARY KEY (userId, mentoringId),
     FOREIGN KEY (userId) REFERENCES user_entity(id),
     FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)
@@ -31,8 +38,8 @@ CREATE TABLE donation_entity (
 
 -- attends_entity Table
 CREATE TABLE attends_entity (
-    userId INTEGER,
-    mentoringId INTEGER,
+    userId TEXT NOT NULL,
+    mentoringId TEXT NOT NULL,
     PRIMARY KEY (userId, mentoringId),
     FOREIGN KEY (userId) REFERENCES user_entity(id),
     FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(id)

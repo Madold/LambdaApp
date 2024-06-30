@@ -18,6 +18,7 @@ import com.markusw.lambda.auth.presentation.LoginViewModel
 import com.markusw.lambda.auth.presentation.LoginViewModelEvent
 import com.markusw.lambda.core.presentation.Screens
 import com.markusw.lambda.home.presentation.HomeScreen
+import com.markusw.lambda.home.presentation.HomeViewModel
 import com.markusw.lambda.ui.theme.LambdaAppTheme
 import com.markusw.lambda.video.presentation.VideoCallScreen
 import com.markusw.lambda.video.presentation.VideoCallViewModel
@@ -71,7 +72,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Screens.Home.route) {
-                        HomeScreen()
+
+                        val viewModel = hiltViewModel<HomeViewModel>()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
+
+                        HomeScreen(
+                            state = state
+                        )
                     }
 
                     composable(route = Screens.Video.route) {

@@ -3,6 +3,7 @@ package com.markusw.lambda.core.data.remote
 import com.google.firebase.firestore.FirebaseFirestore
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
@@ -18,7 +19,7 @@ class FireStoreDatabase(
 
     override fun getUsers(): Flow<List<User>> {
         return callbackFlow {
-            firestore
+            val snapshotListener =  firestore
                 .collection(USERS_COLLECTIONS)
                 .addSnapshotListener { value, error ->
                     error?.let { close(it) }
@@ -30,6 +31,10 @@ class FireStoreDatabase(
                     }
 
                 }
+
+            awaitClose {
+                snapshotListener.remove()
+            }
         }.conflate()
     }
 

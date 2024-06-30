@@ -29,7 +29,7 @@ import com.markusw.lambda.core.presentation.components.ExtraSmallButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-
+    state: HomeState
 ) {
     
     var selectedDestinationRoute by rememberSaveable {
@@ -91,7 +91,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-
+            Text(text = state.users.toString())
         }
     }
 }
@@ -102,5 +102,7 @@ fun HomeScreen(
 )
 @Composable
 fun HomeScreenPreview(modifier: Modifier = Modifier) {
-    HomeScreen()
+    HomeScreen(
+        state = HomeState()
+    )
 }
