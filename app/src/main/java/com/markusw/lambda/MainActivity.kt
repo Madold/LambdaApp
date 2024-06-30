@@ -77,7 +77,8 @@ class MainActivity : ComponentActivity() {
                         val state by viewModel.state.collectAsStateWithLifecycle()
 
                         HomeScreen(
-                            state = state
+                            state = state,
+                            onEvent = viewModel::onEvent
                         )
                     }
 

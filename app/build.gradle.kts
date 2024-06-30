@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.com.google.firebase.storage)
     implementation(libs.app.cash.sqldelight.android.driver)
     implementation(libs.app.cash.sqldelight.coroutines.extensions)
+    implementation(libs.io.coil.kt.coil.compose)
 
     //Test implementations
     testImplementation(libs.junit)
