@@ -13,6 +13,9 @@ insertUser:
 INSERT INTO user_entity (id, displayName, photoUrl, email)
 VALUES (?, ?, ?, ?);
 
+deleteAllUsers:
+DELETE FROM user_entity;
+
 -- mentoring_entity Table
 CREATE TABLE mentoring_entity (
     id TEXT PRIMARY KEY NOT NULL,

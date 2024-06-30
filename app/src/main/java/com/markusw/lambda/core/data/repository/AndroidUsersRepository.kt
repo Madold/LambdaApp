@@ -25,6 +25,7 @@ class AndroidUsersRepository(
         val remoteUsersFlow = remoteDatabase
             .getUsers()
             .flatMapLatest { remoteUsers ->
+                localDatabase.deleteAllUsers()
                 localDatabase.insertUsers(remoteUsers)
                 localDatabase.getUsers()
             }

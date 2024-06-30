@@ -39,5 +39,9 @@ class AndroidLocalDatabase(
         }
     }
 
+    override fun deleteAllUsers() {
+        queries.deleteAllUsers()
+    }
+
 
 }
