@@ -5,16 +5,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.markusw.lambda.auth.domain.AuthService
 import com.markusw.lambda.core.domain.VideoClient
+import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.repository.UsersRepository
 import com.markusw.lambda.core.utils.Result
 import com.markusw.lambda.home.domain.remote.RemoteStorage
+import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
 import com.markusw.lambda.home.domain.use_cases.ValidateCoverUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val authService: AuthService,
     private val videoClient: VideoClient,
     private val remoteStorage: RemoteStorage,
+    private val donationRepository: DonationRepository,
     private val validateCoverUri: ValidateCoverUri
 ) : ViewModel() {
 
@@ -235,7 +239,35 @@ class HomeViewModel @Inject constructor(
                 }
 
                 viewModelScope.launch(Dispatchers.IO) {
+                    val result = donationRepository.donate(
+                        Donation(
+                            author = state.value.loggedUser,
+                            mentoring = event.mentoring,
+                            amount = event.amount
+                        )
+                    )
 
+                    when (result) {
+                        is Result.Error -> {
+
+                        }
+
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    donationState = DonationState.DonationSuccess
+                                )
+                            }
+
+                            delay(2500)
+                            _state.update {
+                                it.copy(
+                                    donationState = DonationState.InProgress,
+                                    isDonating = false
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

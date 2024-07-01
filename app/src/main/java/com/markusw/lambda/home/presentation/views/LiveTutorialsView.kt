@@ -27,6 +27,7 @@ import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.ExtraSmallButton
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
+import com.markusw.lambda.home.presentation.components.DonationStatusDialog
 import com.markusw.lambda.home.presentation.components.LiveMentoringCard
 
 @Composable
@@ -85,6 +86,10 @@ fun LiveTutorialsView(
                     )
                 }
             }
+        }
+
+        if (state.isDonating) {
+            DonationStatusDialog(state)
         }
 
     }
