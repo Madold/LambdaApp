@@ -47,9 +47,10 @@ SELECT
     m.coverUrl,
     m.description,
     m.requesterDescription,
-    IFNULL(SUM(d.amount), 0) AS totalRevenue
+    (IFNULL(SUM(d.amount), 0) + (COUNT(DISTINCT mp.userId) * m.price)) AS totalRevenue
 FROM mentoring_entity m
 LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
+LEFT JOIN mentoring_payment_entity mp ON m.roomId = mp.mentoringId
 GROUP BY m.roomId;
 
 getMentoringWithDetailsById:
@@ -62,9 +63,10 @@ SELECT
     m.coverUrl,
     m.description,
     m.requesterDescription,
-    IFNULL(SUM(d.amount), 0) AS totalRevenue
+    (IFNULL(SUM(d.amount), 0) + (COUNT(DISTINCT mp.userId) * m.price)) AS totalRevenue
 FROM mentoring_entity m
 LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
+LEFT JOIN mentoring_payment_entity mp ON m.roomId = mp.mentoringId
 WHERE m.roomId = ?
 GROUP BY m.roomId;
 
@@ -108,4 +110,23 @@ CREATE TABLE attends_entity (
     PRIMARY KEY (userId, mentoringId),
     FOREIGN KEY (userId) REFERENCES user_entity(id),
     FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
+);
+
+-- mentoring_payment entity
+CREATE TABLE mentoring_payment_entity (
+    userId TEXT NOT NULL,
+    mentoringId TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES user_entity(id),
+    FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
+);
+
+insertMentoringPayment:
+INSERT INTO mentoring_payment_entity (userId, mentoringId)
+VALUES (?, ?);
+
+checkMentoringPayment:
+SELECT EXISTS(
+    SELECT 1
+    FROM mentoring_payment_entity
+    WHERE userId = ? AND mentoringId = ?
 );
