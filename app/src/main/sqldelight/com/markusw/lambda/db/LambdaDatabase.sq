@@ -34,8 +34,8 @@ CREATE TABLE mentoring_entity (
 );
 
 insertMentoring:
-INSERT INTO mentoring_entity (roomId, title, price, requesterId, requesterDescription, description, coverUrl)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO mentoring_entity (roomId, title, price, requesterId, authorId, requesterDescription, description, coverUrl)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 getAllTutorialsWithDetails:
 SELECT

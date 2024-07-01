@@ -18,6 +18,10 @@ class AndroidLocalDatabase(
 
     private val queries = database.lambdaDatabaseQueries
 
+    companion object {
+        const val TAG = "LocalDatabaseImpl"
+    }
+
     override fun getUsers(): Flow<List<User>> {
         return queries
             .getUsers()
@@ -56,7 +60,8 @@ class AndroidLocalDatabase(
                         requesterDescription = dto.requesterDescription,
                         price = dto.price,
                         coverUrl = dto.coverUrl,
-                        requesterId = dto.requesterId
+                        requesterId = dto.requesterId,
+                        authorId = dto.authorId
                     )
             }
         }
@@ -98,8 +103,8 @@ class AndroidLocalDatabase(
                         .toDomainModel()
                     val author = tutorialDetail
                         .authorId?.let {
-                        queries.getUserById(it).executeAsOne()
-                    }?.toDomainModel()
+                            queries.getUserById(it).executeAsOne()
+                        }?.toDomainModel()
 
                     Mentoring(
                         roomId = tutorialDetail.roomId,
