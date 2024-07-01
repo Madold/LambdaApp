@@ -2,10 +2,12 @@ package com.markusw.lambda.core.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.markusw.lambda.core.data.model.MentoringDto
+import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.ext.toDto
+import com.markusw.lambda.home.data.model.DonationDto
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -19,6 +21,7 @@ class FireStoreDatabase(
     companion object {
         const val USERS_COLLECTIONS = "users"
         const val TUTORING = "tutoring"
+        const val DONATIONS_COLLECTION = "donate"
     }
 
     override fun getUsers(): Flow<List<User>> {
@@ -101,6 +104,37 @@ class FireStoreDatabase(
                     "title" to mentoring.title
                 )
             ).await()
+    }
+
+    override suspend fun saveDonation(donation: Donation) {
+        firestore
+            .collection(DONATIONS_COLLECTION)
+            .add(
+                mapOf(
+                    "userId" to donation.author.id,
+                    "amount" to donation.amount,
+                    "mentoringId" to donation.mentoring.roomId
+                )
+            ).await()
+    }
+
+    override fun getDonationsDto(): Flow<List<DonationDto>> {
+        return callbackFlow {
+            val snapshotListener = firestore
+                .collection(DONATIONS_COLLECTION)
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let {
+                        trySend(it.toObjects(DonationDto::class.java))
+                    }
+                }
+
+            awaitClose {
+                snapshotListener.remove()
+            }
+
+        }.conflate()
     }
 
 }

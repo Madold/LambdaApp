@@ -14,4 +14,5 @@ sealed interface HomeEvent {
     data object StartLiveMentoring: HomeEvent
     data class  ChangeSelectedMentoring(val mentoring: Mentoring): HomeEvent
     data class ChangeProvideMentoringDialogVisibility(val isVisible: Boolean): HomeEvent
+    data class DonateToMentoring(val mentoring: Mentoring, val amount: Long): HomeEvent
 }

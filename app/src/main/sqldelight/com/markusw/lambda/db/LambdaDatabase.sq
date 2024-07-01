@@ -52,6 +52,22 @@ FROM mentoring_entity m
 LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
 GROUP BY m.roomId;
 
+getMentoringWithDetailsById:
+SELECT
+    m.roomId,
+    m.title,
+    m.price,
+    m.requesterId,
+    m.authorId,
+    m.coverUrl,
+    m.description,
+    m.requesterDescription,
+    IFNULL(SUM(d.amount), 0) AS totalRevenue
+FROM mentoring_entity m
+LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
+WHERE m.roomId = ?
+GROUP BY m.roomId;
+
 getParticipantsByMentoringId:
 SELECT
     u.id,
@@ -74,6 +90,16 @@ CREATE TABLE donation_entity (
     FOREIGN KEY (userId) REFERENCES user_entity(id),
     FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
 );
+
+insertDonation:
+INSERT INTO donation_entity (userId, mentoringId, amount)
+VALUES(?, ?, ?);
+
+getAllDonationsDto:
+SELECT * FROM donation_entity;
+
+deleteAllDonations:
+DELETE FROM donation_entity;
 
 -- attends_entity Table
 CREATE TABLE attends_entity (

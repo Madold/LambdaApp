@@ -6,8 +6,10 @@ import com.google.firebase.storage.storage
 import com.markusw.lambda.core.domain.local.LocalDatabase
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.home.data.remote.FirebaseStorageService
+import com.markusw.lambda.home.data.repository.AndroidDonationRepository
 import com.markusw.lambda.home.data.repository.AndroidMentoringRepository
 import com.markusw.lambda.home.domain.remote.RemoteStorage
+import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
 import dagger.Module
 import dagger.Provides
@@ -38,6 +40,20 @@ object HomeModule {
     @Singleton
     fun provideRemoteStorage(): RemoteStorage {
         return FirebaseStorageService(Firebase.storage)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDonationsRepository(
+        remoteDatabase: RemoteDatabase,
+        localDatabase: LocalDatabase,
+        @ApplicationContext context: Context
+    ): DonationRepository {
+        return AndroidDonationRepository(
+            localDatabase,
+            remoteDatabase,
+            context
+        )
     }
 
 }

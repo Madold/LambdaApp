@@ -11,6 +11,7 @@ import com.markusw.lambda.core.domain.repository.UsersRepository
 import com.markusw.lambda.core.utils.Result
 import com.markusw.lambda.home.domain.remote.RemoteStorage
 import com.markusw.lambda.home.domain.repository.MentoringRepository
+import com.markusw.lambda.home.domain.use_cases.ValidateCoverUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -29,7 +30,8 @@ class HomeViewModel @Inject constructor(
     private val mentoringRepository: MentoringRepository,
     private val authService: AuthService,
     private val videoClient: VideoClient,
-    private val remoteStorage: RemoteStorage
+    private val remoteStorage: RemoteStorage,
+    private val validateCoverUri: ValidateCoverUri
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -45,6 +47,15 @@ class HomeViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000L),
         HomeState()
     )
+
+    init {
+        _state.update {
+            it.copy(
+                loggedUser = authService.getLoggedUser() ?: User()
+            )
+        }
+    }
+
     private val channel = Channel<HomeViewModelEvent>()
     val events = channel.receiveAsFlow()
 
@@ -157,11 +168,28 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.StartLiveMentoring -> {
+
+                val coverUriValidationResult = validateCoverUri(state.value.mentoringCoverUri)
+
+                val isAnyError = listOf(coverUriValidationResult)
+                    .any { !it.success }
+
+                if (isAnyError) {
+                    _state.update {
+                        it.copy(
+                            coverUriError = coverUriValidationResult.errorMessage
+                        )
+                    }
+                    return
+                }
+
                 _state.update {
                     it.copy(
-                        isStartingLiveMentoring = true
+                        isStartingLiveMentoring = true,
+                        coverUriError = null
                     )
                 }
+
 
                 viewModelScope.launch(Dispatchers.IO) {
                     val coverUrl = remoteStorage.uploadImage(state.value.mentoringCoverUri)
@@ -182,6 +210,7 @@ class HomeViewModel @Inject constructor(
                     )
 
                     channel.send(HomeViewModelEvent.VideoClientInitialized(updatedMentoring.roomId))
+
                     _state.update {
                         it.copy(
                             isProvideMentoringDialogVisible = false,
@@ -190,11 +219,26 @@ class HomeViewModel @Inject constructor(
                             mentoringTitle = "",
                             mentoringRequesterDescription = "",
                             mentoringCoverUri = "",
-                            selectedMentoring = null
+                            selectedMentoring = null,
+                            isStartingLiveMentoring = false
                         )
                     }
                 }
             }
+
+            is HomeEvent.DonateToMentoring -> {
+                _state.update {
+                    it.copy(
+                        isDonating = true,
+                        donationState = DonationState.InProgress
+                    )
+                }
+
+                viewModelScope.launch(Dispatchers.IO) {
+
+                }
+            }
+
         }
     }
 

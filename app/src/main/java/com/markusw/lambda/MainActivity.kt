@@ -120,7 +120,8 @@ class MainActivity : ComponentActivity() {
                         VideoTheme {
                             VideoCallScreen(
                                 state = state,
-                                onEvent = viewModel::onEvent
+                                onEvent = viewModel::onEvent,
+                                navController = navController
                             )
                         }
                     }

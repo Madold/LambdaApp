@@ -3,7 +3,10 @@ package com.markusw.lambda.video.presentation
 import android.Manifest
 import android.os.Build
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,6 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.markusw.lambda.R
+import com.markusw.lambda.core.presentation.components.SmallButton
+import com.markusw.lambda.core.utils.ext.pop
 import io.getstream.video.android.compose.permission.rememberCallPermissionsState
 import io.getstream.video.android.compose.ui.components.call.activecall.CallContent
 import io.getstream.video.android.compose.ui.components.call.controls.actions.DefaultOnCallActionHandler
@@ -21,13 +30,16 @@ import io.getstream.video.android.core.call.state.LeaveCall
 fun VideoCallScreen(
     state: VideoCallState,
     onEvent: (VideoCallEvent) -> Unit,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
 
     Scaffold(modifier = modifier) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .fillMaxSize()
+            ,
             contentAlignment = Alignment.Center
         ) {
             when (state.callStatus) {
@@ -35,7 +47,22 @@ fun VideoCallScreen(
                     Text(text = "Joining Call")
                 }
                 CallStatus.Ended -> {
-                    Text(text = "Call ended")
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.video_call),
+                            contentDescription = null,
+                        )
+
+                        Text(text = "Llamada finalizada")
+
+                        SmallButton(onClick = { navController.pop() }) {
+                            Text(text = "Volver")
+                        }
+                    }
                 }
                 else -> {
                     val basePermissions = listOf(
