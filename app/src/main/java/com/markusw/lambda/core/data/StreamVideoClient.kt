@@ -15,8 +15,13 @@ class StreamVideoClient(
 
     private var client: StreamVideo? = null
     private var call: Call? = null
+    private lateinit var roomId: String
 
-    override fun initVideoClient(username: String) {
+    companion object {
+        const val TAG = "StreamVideoClient"
+    }
+
+    override fun initVideoClient(username: String, userId: String) {
         if (client == null) {
             StreamVideo.removeClient()
 
@@ -24,7 +29,7 @@ class StreamVideoClient(
                 context = context,
                 apiKey = "kegs4gg73yzr",
                 user = StreamSdkUser(
-                    id = username,
+                    id = userId,
                     name = username,
                     type = UserType.Guest
                 )
@@ -33,21 +38,33 @@ class StreamVideoClient(
     }
 
     override fun callToRoom(roomId: String) {
+        this.roomId = roomId
         call = client?.call("default", roomId)
     }
 
     override suspend fun joinCall(): Result<Call> {
         return try {
+
             val shouldCreate = client
-                ?.queryCalls(filters = emptyMap())
+                ?.queryCalls(filters = mapOf(
+                    "id" to roomId
+                ))
                 ?.getOrNull()
                 ?.calls
                 ?.isEmpty() == true
 
-            call?.join(create = shouldCreate)?.isSuccess
+            val joinResult = call?.join(
+                create = shouldCreate
+            )
+            val isSuccess = joinResult?.isSuccess ?: false
+
+            if (!isSuccess) {
+                throw Exception(joinResult?.errorOrNull()?.message)
+            }
 
             Result.Success(call ?: throw Exception("Call was null"))
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.Error(e.message.toString())
         }
     }

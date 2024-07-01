@@ -36,10 +36,6 @@ fun TutoringRequestCard(
     modifier: Modifier = Modifier
 ) {
 
-    var isProvideMentoringDialogVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,22 +91,14 @@ fun TutoringRequestCard(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    ExtraSmallButton(onClick = { isProvideMentoringDialogVisible = true }) {
+                    ExtraSmallButton(onClick = {
+                        onEvent(HomeEvent.ChangeSelectedMentoring(mentoring))
+                        onEvent(HomeEvent.ChangeProvideMentoringDialogVisibility(true))
+                    }) {
                         Text(text = "Brindar tutoría")
                     }
                 }
             }
         }
     }
-
-    if (isProvideMentoringDialogVisible) {
-        ProvideMentoringDialog(
-            mentoring = mentoring,
-            onEvent = onEvent,
-            onDismissRequest = {
-                isProvideMentoringDialogVisible = false
-            }
-        )
-    }
-
 }

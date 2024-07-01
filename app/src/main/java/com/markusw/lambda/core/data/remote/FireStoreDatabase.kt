@@ -86,4 +86,21 @@ class FireStoreDatabase(
         }.conflate()
     }
 
+    override suspend fun updateMentoring(mentoring: Mentoring) {
+        firestore
+            .collection(TUTORING)
+            .document(mentoring.roomId)
+            .update(
+                mapOf(
+                    "authorId" to mentoring.author?.id,
+                    "coverUrl" to mentoring.coverUrl,
+                    "description" to mentoring.description,
+                    "price" to mentoring.price,
+                    "requesterDescription" to mentoring.requesterDescription,
+                    "requesterId" to mentoring.requester.id,
+                    "title" to mentoring.title
+                )
+            ).await()
+    }
+
 }

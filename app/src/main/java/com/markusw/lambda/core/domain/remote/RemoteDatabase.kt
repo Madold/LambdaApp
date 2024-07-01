@@ -10,4 +10,5 @@ interface RemoteDatabase {
     suspend fun saveUser(user: User)
     suspend fun insertMentoring(mentoring: Mentoring)
     fun getTutoringSessionsDto(): Flow<List<MentoringDto>>
+    suspend fun updateMentoring(mentoring: Mentoring)
 }

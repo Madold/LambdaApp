@@ -14,22 +14,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.markusw.lambda.R
-import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.presentation.components.TextField
 import com.markusw.lambda.home.presentation.HomeEvent
@@ -37,26 +31,21 @@ import com.markusw.lambda.home.presentation.HomeState
 
 @Composable
 fun ProvideMentoringDialog(
-    mentoring: Mentoring,
+    state: HomeState,
     onEvent: (HomeEvent) -> Unit,
-    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var mentoringToStart by remember {
-        mutableStateOf(mentoring)
-    }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { coverUri ->
-            mentoringToStart = mentoringToStart.copy(
-                coverUrl = coverUri.toString()
-            )
+            onEvent(HomeEvent.ChangeMentoringCoverUrl(coverUri.toString()))
         }
     )
 
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(onDismissRequest = {
+        onEvent(HomeEvent.ChangeProvideMentoringDialogVisibility(false))
+    }) {
         Card(
             modifier = modifier,
         ) {
@@ -64,36 +53,29 @@ fun ProvideMentoringDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .verticalScroll(rememberScrollState())
-                ,
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TextField(
-                    value = mentoringToStart.description,
+                    value = state.mentoringDescription,
                     onValueChange = {
-                        mentoringToStart = mentoringToStart.copy(
-                            description = it
-                        )
+                        onEvent(HomeEvent.ChangeMentoringDescription(it))
                     },
                     label = {
                         Text(text = "Descripción corta de la tutoría")
                     }
                 )
                 TextField(
-                    value = mentoringToStart.price.toString(),
+                    value = state.mentoringPrice.toString(),
                     onValueChange = {
                         try {
                             val price = it.toLong()
 
                             if (price >= 0) {
-                                mentoringToStart = mentoringToStart.copy(
-                                    price = price
-                                )
+                                onEvent(HomeEvent.ChangeMentoringPrice(price))
                             }
                         } catch (e: NumberFormatException) {
-                            mentoringToStart = mentoringToStart.copy(
-                                price = 0
-                            )
+                            onEvent(HomeEvent.ChangeMentoringPrice(0))
                         }
                     },
                     label = {
@@ -114,11 +96,11 @@ fun ProvideMentoringDialog(
                         )
                     )
                 }) {
-                    Text(text = if (mentoringToStart.coverUrl.isBlank()) "Escojer portada" else "Cambiar portada")
+                    Text(text = if (state.mentoringCoverUri.isBlank()) "Escojer portada" else "Cambiar portada")
                 }
 
                 AsyncImage(
-                    model = Uri.parse(mentoringToStart.coverUrl),
+                    model = Uri.parse(state.mentoringCoverUri),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -126,11 +108,13 @@ fun ProvideMentoringDialog(
                     contentScale = ContentScale.FillWidth,
                     error = painterResource(id = R.drawable.pick_image),
                 )
-                
-                SmallButton(onClick = { onEvent(HomeEvent.StartLiveMentoring(mentoringToStart)) }) {
+
+                SmallButton(onClick = {
+                    onEvent(HomeEvent.StartLiveMentoring)
+                }) {
                     Text(text = "Iniciar tutoría")
                 }
-                
+
             }
         }
     }

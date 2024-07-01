@@ -67,19 +67,23 @@ fun TutoringRequestView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(pendingRequests, key = { it.roomId }) { mentoring ->
-
-
                 TutoringRequestCard(
                     mentoring = mentoring,
                     onEvent = onEvent,
                 )
-
             }
         }
     }
 
     if (state.isRequestTutoringDialogVisible) {
         TutoringRequestDialog(
+            state = state,
+            onEvent = onEvent
+        )
+    }
+
+    if (state.isProvideMentoringDialogVisible) {
+        ProvideMentoringDialog(
             state = state,
             onEvent = onEvent
         )

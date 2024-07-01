@@ -1,5 +1,7 @@
 package com.markusw.lambda.video.presentation
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.markusw.lambda.core.domain.VideoClient
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoCallViewModel @Inject constructor(
-    private val videoClient: VideoClient
+    private val videoClient: VideoClient,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(VideoCallState())
@@ -24,7 +27,14 @@ class VideoCallViewModel @Inject constructor(
     private val channel = Channel<VideoCallViewModelEvent>()
     val events = channel.receiveAsFlow()
 
+    companion object {
+        const val TAG = "VideoCallViewModel"
+    }
+
     init {
+        val roomId = savedStateHandle.get<String>("roomId") ?: "main-room"
+        videoClient.callToRoom(roomId)
+
         _state.update {
             it.copy(
                 call = videoClient.getCall()
@@ -52,7 +62,6 @@ class VideoCallViewModel @Inject constructor(
     private fun joinCall() {
         if (state.value.callStatus == CallStatus.Running) return
 
-
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = videoClient.joinCall()) {
                 is Result.Error -> {
@@ -61,6 +70,7 @@ class VideoCallViewModel @Inject constructor(
                             callStatus = CallStatus.Ended
                         )
                     }
+                    Log.d(TAG, "Call error ${result.message}")
                 }
                 is Result.Success -> {
                     _state.update {
@@ -69,6 +79,7 @@ class VideoCallViewModel @Inject constructor(
                             callStatus = CallStatus.Running
                         )
                     }
+                    Log.d(TAG, "Call success")
                 }
             }
         }
