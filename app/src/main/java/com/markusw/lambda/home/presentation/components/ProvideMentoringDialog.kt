@@ -123,7 +123,7 @@ fun ProvideMentoringDialog(
                 )
 
                 SmallButton(onClick = {
-                    onEvent(HomeEvent.StartLiveMentoring)
+                    onEvent(HomeEvent.BringLiveMentoring)
                 }, enabled = !state.isStartingLiveMentoring) {
 
                     Text(text = if (state.isStartingLiveMentoring) "Iniciando llamada" else "Iniciar tutoría")

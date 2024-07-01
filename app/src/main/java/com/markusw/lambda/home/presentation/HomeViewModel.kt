@@ -171,7 +171,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            is HomeEvent.StartLiveMentoring -> {
+            is HomeEvent.BringLiveMentoring -> {
 
                 val coverUriValidationResult = validateCoverUri(state.value.mentoringCoverUri)
 
