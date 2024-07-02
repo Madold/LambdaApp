@@ -23,5 +23,5 @@ data class HomeState(
     val donationState: DonationState = DonationState.InProgress,
     val isPaymentProcessing: Boolean = false,
     val paymentState: PaymentState = PaymentState.InProcess,
-    val isJoiningLiveMentoring: Boolean = false
+    val isJoiningLiveMentoring: Boolean = false,
 )

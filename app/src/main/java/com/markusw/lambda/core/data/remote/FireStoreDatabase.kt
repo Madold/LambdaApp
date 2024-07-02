@@ -7,6 +7,7 @@ import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.ext.toDto
+import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.channels.awaitClose
@@ -24,6 +25,7 @@ class FireStoreDatabase(
         const val TUTORING = "tutoring"
         const val DONATIONS_COLLECTION = "donate"
         const val MENTORING_PAYMENTS_COLLECTION = "mentoring_payment"
+        const val ATTENDS_COLLECTION = "attends"
     }
 
     override fun getUsers(): Flow<List<User>> {
@@ -162,6 +164,31 @@ class FireStoreDatabase(
                     }
 
                 }
+            awaitClose {
+                snapshotListener.remove()
+            }
+        }.conflate()
+    }
+
+    override suspend fun registerAttendanceDto(attendanceDto: AttendanceDto) {
+        firestore
+            .collection(ATTENDS_COLLECTION)
+            .add(attendanceDto)
+            .await()
+    }
+
+    override fun getAttendanceDto(): Flow<List<AttendanceDto>> {
+        return callbackFlow<List<AttendanceDto>> {
+            val snapshotListener = firestore
+                .collection(ATTENDS_COLLECTION)
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let {
+                        trySend(it.toObjects(AttendanceDto::class.java))
+                    }
+                }
+
             awaitClose {
                 snapshotListener.remove()
             }

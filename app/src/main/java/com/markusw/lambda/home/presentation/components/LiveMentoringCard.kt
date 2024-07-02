@@ -39,11 +39,14 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.markusw.lambda.R
 import com.markusw.lambda.core.domain.model.Mentoring
+import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.home.presentation.HomeEvent
+import kotlin.math.log
 
 @Composable
 fun LiveMentoringCard(
+    loggedUser: User,
     mentoring: Mentoring,
     onEvent: (HomeEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -58,7 +61,9 @@ fun LiveMentoringCard(
     }
 
     val buttonText = remember(mentoring.price) {
-        if (mentoring.price == 0L) {
+        if (mentoring.author?.id == loggedUser.id) {
+            "Unirse"
+        } else if (mentoring.price == 0L) {
             "Unirse: GRATIS"
         } else {
             "Unirse COP: $${mentoring.price}"
@@ -148,22 +153,29 @@ fun LiveMentoringCard(
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        SmallButton(
-                            onClick = { isDonationDialogVisible = true },
-                            colors = ButtonDefaults.outlinedButtonColors()
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_donation),
-                                contentDescription = null
-                            )
-                            Text(text = "Donar")
+                        if (mentoring.author?.id != loggedUser.id) {
+                            SmallButton(
+                                onClick = { isDonationDialogVisible = true },
+                                colors = ButtonDefaults.outlinedButtonColors()
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_donation),
+                                    contentDescription = null
+                                )
+                                Text(text = "Donar")
+                            }
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
 
                         SmallButton(onClick = {
-                            isPaymentDialogVisible = true
+                            if (mentoring.author?.id != loggedUser.id) {
+                                isPaymentDialogVisible = true
+
+                                return@SmallButton
+                            }
+
+                            onEvent(HomeEvent.JoinLiveMentoring(mentoringId = mentoring.roomId))
                         }) {
                             Text(buttonText)
                         }

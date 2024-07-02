@@ -112,6 +112,23 @@ CREATE TABLE attends_entity (
     FOREIGN KEY (mentoringId) REFERENCES mentoring_entity(roomId)
 );
 
+insertAttendance:
+INSERT INTO attends_entity (userId, mentoringId)
+VALUES (?, ?);
+
+deleteAllAttendance:
+DELETE FROM attends_entity;
+
+getAllAttendance:
+SELECT * FROM attends_entity;
+
+checkUserAttendance:
+SELECT EXISTS(
+    SELECT 1
+    FROM attends_entity
+    WHERE userId = ? AND mentoringId = ?
+);
+
 -- mentoring_payment entity
 CREATE TABLE mentoring_payment_entity (
     userId TEXT NOT NULL,

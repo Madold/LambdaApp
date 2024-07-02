@@ -4,6 +4,7 @@ import com.markusw.lambda.core.data.model.MentoringDto
 import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
+import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.flow.Flow
@@ -18,4 +19,6 @@ interface RemoteDatabase {
     fun getDonationsDto(): Flow<List<DonationDto>>
     suspend fun savePayment(mentoring: Mentoring, user: User)
     fun getPaymentsDto(): Flow<List<MentoringPaymentDto>>
+    suspend fun registerAttendanceDto(attendanceDto: AttendanceDto)
+    fun getAttendanceDto(): Flow<List<AttendanceDto>>
 }

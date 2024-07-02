@@ -9,8 +9,11 @@ import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.repository.UsersRepository
+import com.markusw.lambda.core.presentation.Screens
 import com.markusw.lambda.core.utils.Result
+import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.domain.remote.RemoteStorage
+import com.markusw.lambda.home.domain.repository.AttendanceRepository
 import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
 import com.markusw.lambda.home.domain.repository.PaymentRepository
@@ -37,7 +40,8 @@ class HomeViewModel @Inject constructor(
     private val remoteStorage: RemoteStorage,
     private val donationRepository: DonationRepository,
     private val validateCoverUri: ValidateCoverUri,
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
+    private val attendanceRepository: AttendanceRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -289,6 +293,7 @@ class HomeViewModel @Inject constructor(
                         is Result.Error -> {
 
                         }
+
                         is Result.Success -> {
                             _state.update {
                                 it.copy(
@@ -305,12 +310,19 @@ class HomeViewModel @Inject constructor(
                                     isJoiningLiveMentoring = true
                                 )
                             }
+                            attendanceRepository.registerAttendance(
+                                attendanceDto = AttendanceDto(
+                                    userId = loggedUser.id,
+                                    mentoringId = event.mentoring.roomId
+                                )
+                            )
 
                             videoClient.initVideoClient(
                                 userId = loggedUser.id,
                                 username = loggedUser.displayName,
                                 photoUrl = loggedUser.photoUrl
                             )
+
                             channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoring.roomId))
                             _state.update {
                                 it.copy(
@@ -319,9 +331,30 @@ class HomeViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+            }
 
+            is HomeEvent.JoinLiveMentoring -> {
+                _state.update {
+                    it.copy(
+                        isJoiningLiveMentoring = true
+                    )
                 }
 
+                videoClient.initVideoClient(
+                    username = state.value.loggedUser.displayName,
+                    userId = state.value.loggedUser.id,
+                    photoUrl = state.value.loggedUser.photoUrl
+                )
+
+                viewModelScope.launch {
+                    channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId))
+                    _state.update {
+                        it.copy(
+                            isJoiningLiveMentoring = false
+                        )
+                    }
+                }
             }
         }
     }

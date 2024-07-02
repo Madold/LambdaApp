@@ -19,9 +19,13 @@ class AndroidMentoringRepository(
 ) : MentoringRepository {
 
     override fun getTutoringSessions(): Flow<List<Mentoring>> {
-
         val remoteMentoringFlow = remoteDatabase
-            .getPaymentsDto()
+            .getAttendanceDto()
+            .flatMapLatest { attendanceDto ->
+                localDatabase.deleteAllAttendance()
+                localDatabase.insertAttendances(attendanceDto)
+                remoteDatabase.getPaymentsDto()
+            }
             .flatMapLatest { paymentsDto ->
                 localDatabase.deleteAllMentoringPayments()
                 localDatabase.insertMentoringPayments(paymentsDto)

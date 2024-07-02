@@ -4,6 +4,7 @@ import com.markusw.lambda.core.data.model.MentoringDto
 import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
+import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.flow.Flow
@@ -25,4 +26,7 @@ interface LocalDatabase {
     fun deleteAllMentoringPayments()
     fun getMentoringPayments(): Flow<List<MentoringPaymentDto>>
     fun checkPaymentIfExist(mentoringId: String, userId: String): Boolean
+    fun deleteAllAttendance()
+    fun insertAttendances(attendances: List<AttendanceDto>)
+    fun checkUserAttendance(attendanceDto: AttendanceDto): Boolean
 }

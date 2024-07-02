@@ -6,10 +6,12 @@ import com.google.firebase.storage.storage
 import com.markusw.lambda.core.domain.local.LocalDatabase
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.home.data.remote.FirebaseStorageService
+import com.markusw.lambda.home.data.repository.AndroidAttendanceRepository
 import com.markusw.lambda.home.data.repository.AndroidDonationRepository
 import com.markusw.lambda.home.data.repository.AndroidMentoringRepository
 import com.markusw.lambda.home.data.repository.AndroidPaymentRepository
 import com.markusw.lambda.home.domain.remote.RemoteStorage
+import com.markusw.lambda.home.domain.repository.AttendanceRepository
 import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
 import com.markusw.lambda.home.domain.repository.PaymentRepository
@@ -66,6 +68,20 @@ object HomeModule {
         @ApplicationContext context: Context
     ): PaymentRepository {
         return AndroidPaymentRepository(
+            remoteDatabase,
+            localDatabase,
+            context
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttendanceRepository(
+        remoteDatabase: RemoteDatabase,
+        localDatabase: LocalDatabase,
+        @ApplicationContext context: Context
+    ): AttendanceRepository {
+        return AndroidAttendanceRepository(
             remoteDatabase,
             localDatabase,
             context

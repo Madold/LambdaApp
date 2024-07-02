@@ -9,11 +9,11 @@ import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.utils.ext.toDomainModel
 import com.markusw.lambda.db.LambdaDatabase
+import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class AndroidLocalDatabase(
@@ -219,6 +219,29 @@ class AndroidLocalDatabase(
         return queries
             .checkMentoringPayment(userId, mentoringId)
             .executeAsOne()
+    }
+
+    override fun deleteAllAttendance() {
+        queries
+            .deleteAllAttendance()
+    }
+
+    override fun insertAttendances(attendances: List<AttendanceDto>) {
+        database.transaction {
+            attendances.forEach { attendanceDto ->
+                queries.insertAttendance(
+                    userId = attendanceDto.userId,
+                    mentoringId = attendanceDto.mentoringId
+                )
+            }
+        }
+    }
+
+    override fun checkUserAttendance(attendanceDto: AttendanceDto): Boolean {
+        return queries.checkUserAttendance(
+            userId = attendanceDto.userId,
+            mentoringId = attendanceDto.mentoringId
+        ).executeAsOne()
     }
 
 
