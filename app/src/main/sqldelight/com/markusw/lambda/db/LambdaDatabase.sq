@@ -124,6 +124,12 @@ insertMentoringPayment:
 INSERT INTO mentoring_payment_entity (userId, mentoringId)
 VALUES (?, ?);
 
+getAllMentoringPaymentsEntity:
+SELECT * FROM mentoring_payment_entity;
+
+deleteAllMentoringPayments:
+DELETE FROM mentoring_payment_entity;
+
 checkMentoringPayment:
 SELECT EXISTS(
     SELECT 1

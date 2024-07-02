@@ -40,7 +40,6 @@ import coil.request.ImageRequest
 import com.markusw.lambda.R
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.presentation.components.SmallButton
-import com.markusw.lambda.home.presentation.DonationDialog
 import com.markusw.lambda.home.presentation.HomeEvent
 
 @Composable
@@ -51,6 +50,10 @@ fun LiveMentoringCard(
 ) {
 
     var isDonationDialogVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var isPaymentDialogVisible by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -65,8 +68,7 @@ fun LiveMentoringCard(
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-        ,
+            .fillMaxWidth(),
     ) {
         Card(
             modifier = modifier
@@ -76,8 +78,7 @@ fun LiveMentoringCard(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(mentoring.coverUrl)
                         .crossfade(true)
-                        .build()
-                    ,
+                        .build(),
                     contentDescription = null,
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier.fillMaxWidth()
@@ -140,15 +141,14 @@ fun LiveMentoringCard(
 
                     }
 
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
-                        ,
+                            .padding(top = 16.dp),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
-                        
+                    ) {
+
                         SmallButton(
                             onClick = { isDonationDialogVisible = true },
                             colors = ButtonDefaults.outlinedButtonColors()
@@ -159,11 +159,11 @@ fun LiveMentoringCard(
                             )
                             Text(text = "Donar")
                         }
-                        
-                        Spacer(modifier = Modifier.width(8.dp) )
-                        
-                        SmallButton(onClick = {
 
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        SmallButton(onClick = {
+                            isPaymentDialogVisible = true
                         }) {
                             Text(buttonText)
                         }
@@ -179,6 +179,14 @@ fun LiveMentoringCard(
             mentoring = mentoring,
             onEvent = onEvent,
             onDismissRequest = { isDonationDialogVisible = false }
+        )
+    }
+
+    if (isPaymentDialogVisible) {
+        PaymentDialog(
+            mentoring = mentoring,
+            onEvent = onEvent,
+            onDismissRequest = { isPaymentDialogVisible = false }
         )
     }
 

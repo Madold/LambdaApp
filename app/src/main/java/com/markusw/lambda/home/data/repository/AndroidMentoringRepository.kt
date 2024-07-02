@@ -6,7 +6,6 @@ import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.Result
 import com.markusw.lambda.core.utils.ext.isDeviceOnline
-import com.markusw.lambda.home.domain.remote.RemoteStorage
 import com.markusw.lambda.home.domain.repository.MentoringRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -17,16 +16,22 @@ class AndroidMentoringRepository(
     private val remoteDatabase: RemoteDatabase,
     private val localDatabase: LocalDatabase,
     private val context: Context,
-): MentoringRepository {
+) : MentoringRepository {
 
     override fun getTutoringSessions(): Flow<List<Mentoring>> {
+
         val remoteMentoringFlow = remoteDatabase
-            .getTutoringSessionsDto()
-            .flatMapLatest { sessions ->
+            .getPaymentsDto()
+            .flatMapLatest { paymentsDto ->
+                localDatabase.deleteAllMentoringPayments()
+                localDatabase.insertMentoringPayments(paymentsDto)
+                remoteDatabase.getTutoringSessionsDto()
+            }.flatMapLatest { sessions ->
                 localDatabase.deleteAllMentoring()
                 localDatabase.insertTutorials(sessions)
                 localDatabase.getTutorials()
             }
+
         val localMentoringFlow = localDatabase.getTutorials()
 
         return if (context.isDeviceOnline()) {

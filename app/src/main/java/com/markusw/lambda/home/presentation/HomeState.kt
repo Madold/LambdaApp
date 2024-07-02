@@ -20,5 +20,8 @@ data class HomeState(
     val isStartingLiveMentoring: Boolean = false,
     val coverUriError: String? = null,
     val isDonating: Boolean = false,
-    val donationState: DonationState = DonationState.InProgress
+    val donationState: DonationState = DonationState.InProgress,
+    val isPaymentProcessing: Boolean = false,
+    val paymentState: PaymentState = PaymentState.InProcess,
+    val isJoiningLiveMentoring: Boolean = false
 )

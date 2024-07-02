@@ -15,15 +15,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.markusw.lambda.R
-import com.markusw.lambda.home.presentation.DonationState
 import com.markusw.lambda.home.presentation.HomeState
+import com.markusw.lambda.home.presentation.PaymentState
 
 @Composable
-fun DonationStatusDialog(
+fun PaymentStatusDialog(
     state: HomeState
 ) {
 
-    Dialog(onDismissRequest = {  }) {
+    Dialog(onDismissRequest = { /*TODO*/ }) {
         Card {
             Column(
                 modifier = Modifier
@@ -32,18 +32,18 @@ fun DonationStatusDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                when (state.donationState) {
-                    DonationState.DonationSuccess -> {
+                when (state.paymentState) {
+                    PaymentState.Success -> {
                         Image(
                             painter = painterResource(id = R.drawable.check_mark),
                             contentDescription = null
                         )
-                        Text(text = "Donación exitosa :)")
+                        Text(text = "Pago exitoso :)")
                     }
-                    
-                    DonationState.InProgress -> {
-                        CircularProgressIndicator()    
-                        Text(text = "Realizando donación")
+
+                    PaymentState.InProcess -> {
+                        CircularProgressIndicator()
+                        Text(text = "Realizando pago")
                     }
                 }
             }

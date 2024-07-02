@@ -13,6 +13,7 @@ import com.markusw.lambda.core.utils.Result
 import com.markusw.lambda.home.domain.remote.RemoteStorage
 import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
+import com.markusw.lambda.home.domain.repository.PaymentRepository
 import com.markusw.lambda.home.domain.use_cases.ValidateCoverUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,8 @@ class HomeViewModel @Inject constructor(
     private val videoClient: VideoClient,
     private val remoteStorage: RemoteStorage,
     private val donationRepository: DonationRepository,
-    private val validateCoverUri: ValidateCoverUri
+    private val validateCoverUri: ValidateCoverUri,
+    private val paymentRepository: PaymentRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -210,7 +212,8 @@ class HomeViewModel @Inject constructor(
 
                     videoClient.initVideoClient(
                         username = loggedUser.displayName,
-                        userId = loggedUser.id
+                        userId = loggedUser.id,
+                        photoUrl = loggedUser.photoUrl
                     )
 
                     channel.send(HomeViewModelEvent.VideoClientInitialized(updatedMentoring.roomId))
@@ -271,6 +274,55 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            is HomeEvent.PayMentoringAccess -> {
+                _state.update {
+                    it.copy(
+                        isPaymentProcessing = true
+                    )
+                }
+
+                viewModelScope.launch {
+                    val loggedUser = authService.getLoggedUser() ?: return@launch
+                    val result = paymentRepository.payMentoringAccess(event.mentoring, loggedUser)
+
+                    when (result) {
+                        is Result.Error -> {
+
+                        }
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    paymentState = PaymentState.Success
+                                )
+                            }
+
+                            delay(2500)
+
+                            _state.update {
+                                it.copy(
+                                    isPaymentProcessing = false,
+                                    paymentState = PaymentState.InProcess,
+                                    isJoiningLiveMentoring = true
+                                )
+                            }
+
+                            videoClient.initVideoClient(
+                                userId = loggedUser.id,
+                                username = loggedUser.displayName,
+                                photoUrl = loggedUser.photoUrl
+                            )
+                            channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoring.roomId))
+                            _state.update {
+                                it.copy(
+                                    isJoiningLiveMentoring = false
+                                )
+                            }
+                        }
+                    }
+
+                }
+
+            }
         }
     }
 

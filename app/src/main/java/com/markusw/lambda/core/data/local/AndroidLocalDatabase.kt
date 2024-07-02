@@ -10,8 +10,10 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.utils.ext.toDomainModel
 import com.markusw.lambda.db.LambdaDatabase
 import com.markusw.lambda.home.data.model.DonationDto
+import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class AndroidLocalDatabase(
@@ -181,6 +183,42 @@ class AndroidLocalDatabase(
             description = mentoringDto.description,
             coverUrl = mentoringDto.coverUrl
         )
+    }
+
+    override fun insertMentoringPayments(mentoringPaymentsDto: List<MentoringPaymentDto>) {
+        database.transaction {
+            mentoringPaymentsDto.forEach { dto ->
+                queries.insertMentoringPayment(
+                    userId = dto.userId,
+                    mentoringId = dto.mentoringId
+                )
+            }
+        }
+    }
+
+    override fun deleteAllMentoringPayments() {
+        queries.deleteAllMentoringPayments()
+    }
+
+    override fun getMentoringPayments(): Flow<List<MentoringPaymentDto>> {
+        return queries
+            .getAllMentoringPaymentsEntity()
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { entities ->
+                entities.map { entity ->
+                    MentoringPaymentDto(
+                        userId = entity.userId,
+                        mentoringId = entity.mentoringId
+                    )
+                }
+            }
+    }
+
+    override fun checkPaymentIfExist(mentoringId: String, userId: String): Boolean {
+        return queries
+            .checkMentoringPayment(userId, mentoringId)
+            .executeAsOne()
     }
 
 

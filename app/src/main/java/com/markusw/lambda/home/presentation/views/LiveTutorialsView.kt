@@ -28,7 +28,9 @@ import com.markusw.lambda.core.presentation.components.ExtraSmallButton
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
 import com.markusw.lambda.home.presentation.components.DonationStatusDialog
+import com.markusw.lambda.home.presentation.components.JoiningLiveSessionDialog
 import com.markusw.lambda.home.presentation.components.LiveMentoringCard
+import com.markusw.lambda.home.presentation.components.PaymentStatusDialog
 
 @Composable
 fun LiveTutorialsView(
@@ -90,6 +92,14 @@ fun LiveTutorialsView(
 
         if (state.isDonating) {
             DonationStatusDialog(state)
+        }
+
+        if (state.isPaymentProcessing) {
+            PaymentStatusDialog(state)
+        }
+
+        if (state.isJoiningLiveMentoring) {
+            JoiningLiveSessionDialog()
         }
 
     }

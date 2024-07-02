@@ -1,4 +1,4 @@
-package com.markusw.lambda.home.presentation
+package com.markusw.lambda.home.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -33,6 +33,7 @@ import com.markusw.lambda.R
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.presentation.components.TextField
+import com.markusw.lambda.home.presentation.HomeEvent
 
 @Composable
 fun DonationDialog(

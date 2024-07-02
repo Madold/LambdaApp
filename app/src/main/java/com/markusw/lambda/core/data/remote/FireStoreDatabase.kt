@@ -8,6 +8,7 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.ext.toDto
 import com.markusw.lambda.home.data.model.DonationDto
+import com.markusw.lambda.home.data.model.MentoringPaymentDto
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,6 +23,7 @@ class FireStoreDatabase(
         const val USERS_COLLECTIONS = "users"
         const val TUTORING = "tutoring"
         const val DONATIONS_COLLECTION = "donate"
+        const val MENTORING_PAYMENTS_COLLECTION = "mentoring_payment"
     }
 
     override fun getUsers(): Flow<List<User>> {
@@ -77,8 +79,8 @@ class FireStoreDatabase(
                     value?.let { querySnapshot ->
                         trySend(
                             querySnapshot
-                            .toObjects(MentoringDto::class.java)
-                            .filter { it.roomId.isNotBlank() }
+                                .toObjects(MentoringDto::class.java)
+                                .filter { it.roomId.isNotBlank() }
                         )
                     }
                 }
@@ -136,5 +138,35 @@ class FireStoreDatabase(
 
         }.conflate()
     }
+
+    override suspend fun savePayment(mentoring: Mentoring, user: User) {
+        firestore
+            .collection(MENTORING_PAYMENTS_COLLECTION)
+            .add(
+                mapOf(
+                    "userId" to user.id,
+                    "mentoringId" to mentoring.roomId
+                )
+            ).await()
+    }
+
+    override fun getPaymentsDto(): Flow<List<MentoringPaymentDto>> {
+        return callbackFlow {
+            val snapshotListener = firestore
+                .collection(MENTORING_PAYMENTS_COLLECTION)
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let {
+                        trySend(it.toObjects(MentoringPaymentDto::class.java))
+                    }
+
+                }
+            awaitClose {
+                snapshotListener.remove()
+            }
+        }.conflate()
+    }
+
 
 }

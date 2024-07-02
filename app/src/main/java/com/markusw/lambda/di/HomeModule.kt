@@ -8,9 +8,11 @@ import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.home.data.remote.FirebaseStorageService
 import com.markusw.lambda.home.data.repository.AndroidDonationRepository
 import com.markusw.lambda.home.data.repository.AndroidMentoringRepository
+import com.markusw.lambda.home.data.repository.AndroidPaymentRepository
 import com.markusw.lambda.home.domain.remote.RemoteStorage
 import com.markusw.lambda.home.domain.repository.DonationRepository
 import com.markusw.lambda.home.domain.repository.MentoringRepository
+import com.markusw.lambda.home.domain.repository.PaymentRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,6 +54,20 @@ object HomeModule {
         return AndroidDonationRepository(
             localDatabase,
             remoteDatabase,
+            context
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providePaymentRepository(
+        remoteDatabase: RemoteDatabase,
+        localDatabase: LocalDatabase,
+        @ApplicationContext context: Context
+    ): PaymentRepository {
+        return AndroidPaymentRepository(
+            remoteDatabase,
+            localDatabase,
             context
         )
     }

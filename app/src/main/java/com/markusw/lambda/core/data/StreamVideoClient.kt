@@ -21,7 +21,7 @@ class StreamVideoClient(
         const val TAG = "StreamVideoClient"
     }
 
-    override fun initVideoClient(username: String, userId: String) {
+    override fun initVideoClient(username: String, userId: String, photoUrl: String) {
         if (client == null) {
             StreamVideo.removeClient()
 
@@ -31,7 +31,8 @@ class StreamVideoClient(
                 user = StreamSdkUser(
                     id = userId,
                     name = username,
-                    type = UserType.Guest
+                    type = UserType.Guest,
+                    image = photoUrl
                 )
             ).build()
         }
