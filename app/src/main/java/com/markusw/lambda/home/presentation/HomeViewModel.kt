@@ -9,7 +9,6 @@ import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.repository.UsersRepository
-import com.markusw.lambda.core.presentation.Screens
 import com.markusw.lambda.core.utils.Result
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.domain.remote.RemoteStorage
@@ -214,6 +213,13 @@ class HomeViewModel @Inject constructor(
 
                     mentoringRepository.updateMentoring(updatedMentoring)
 
+                    attendanceRepository.registerAttendance(
+                        AttendanceDto(
+                            userId = loggedUser.id,
+                            mentoringId = updatedMentoring.roomId
+                        )
+                    )
+
                     videoClient.initVideoClient(
                         username = loggedUser.displayName,
                         userId = loggedUser.id,
@@ -341,20 +347,36 @@ class HomeViewModel @Inject constructor(
                     )
                 }
 
-                videoClient.initVideoClient(
-                    username = state.value.loggedUser.displayName,
-                    userId = state.value.loggedUser.id,
-                    photoUrl = state.value.loggedUser.photoUrl
-                )
-
-                viewModelScope.launch {
-                    channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId))
-                    _state.update {
-                        it.copy(
-                            isJoiningLiveMentoring = false
+                viewModelScope.launch(Dispatchers.IO) {
+                    val registerAttendanceResult = attendanceRepository.registerAttendance(
+                        AttendanceDto(
+                            userId = state.value.loggedUser.id,
+                            mentoringId = event.mentoringId
                         )
+                    )
+
+                    when (registerAttendanceResult) {
+                        is Result.Error -> {
+
+                        }
+
+                        is Result.Success -> {
+                            videoClient.initVideoClient(
+                                username = state.value.loggedUser.displayName,
+                                userId = state.value.loggedUser.id,
+                                photoUrl = state.value.loggedUser.photoUrl
+                            )
+                            channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId))
+
+                            _state.update {
+                                it.copy(
+                                    isJoiningLiveMentoring = false
+                                )
+                            }
+                        }
                     }
                 }
+
             }
         }
     }

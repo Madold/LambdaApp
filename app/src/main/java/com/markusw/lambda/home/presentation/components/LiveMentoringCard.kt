@@ -169,6 +169,11 @@ fun LiveMentoringCard(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         SmallButton(onClick = {
+                            if (mentoring.price == 0L) {
+                                onEvent(HomeEvent.JoinLiveMentoring(mentoringId = mentoring.roomId))
+                                return@SmallButton
+                            }
+
                             if (mentoring.author?.id != loggedUser.id) {
                                 isPaymentDialogVisible = true
 

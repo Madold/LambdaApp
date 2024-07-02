@@ -2,6 +2,7 @@
 
 package com.markusw.lambda.home.presentation.views
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,7 +60,8 @@ fun LiveTutorialsView(
         )
 
         LazyColumn(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(liveTutorials, key = { it.roomId }) { mentoring ->
                 LiveMentoringCard(
