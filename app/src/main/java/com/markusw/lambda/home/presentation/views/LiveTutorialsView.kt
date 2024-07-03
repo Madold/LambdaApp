@@ -30,7 +30,8 @@ import com.markusw.lambda.home.presentation.components.PaymentStatusDialog
 @Composable
 fun LiveTutorialsView(
     state: HomeState,
-    onEvent: (HomeEvent) -> Unit
+    onEvent: (HomeEvent) -> Unit,
+    onNavigationButtonClick: () -> Unit = {}
 ) {
 
     val liveTutorials = remember(state.tutorials) {
@@ -47,9 +48,7 @@ fun LiveTutorialsView(
             title = { },
             navigationIcon = {
                 IconButton(
-                    onClick = {
-
-                    }
+                    onClick = onNavigationButtonClick
                 ) {
                     Icon(
                         imageVector = Icons.Default.Menu,
