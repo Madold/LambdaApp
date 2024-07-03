@@ -1,5 +1,7 @@
 package com.markusw.lambda.home.presentation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -18,6 +20,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.markusw.lambda.core.presentation.components.AdmobBanner
 import com.markusw.lambda.home.presentation.views.LiveTutorialsView
 import com.markusw.lambda.home.presentation.views.TutoringRequestView
 
@@ -34,29 +37,36 @@ fun HomeScreen(
     
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                HomeBottomDestination.entries().forEach { destination ->
-                    NavigationBarItem(
-                        selected = selectedDestinationRoute == destination.route,
-                        onClick = {
-                            selectedDestinationRoute = destination.route
-                            bottomNavController.navigate(destination.route) {
-                                popUpTo(bottomNavController.graph.findStartDestination().id) {
-                                    saveState = true
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AdmobBanner(
+                    modifier = Modifier.fillMaxWidth()
+                )
+                NavigationBar {
+                    HomeBottomDestination.entries().forEach { destination ->
+                        NavigationBarItem(
+                            selected = selectedDestinationRoute == destination.route,
+                            onClick = {
+                                selectedDestinationRoute = destination.route
+                                bottomNavController.navigate(destination.route) {
+                                    popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
                                 }
-                                launchSingleTop = true
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = destination.icon),
+                                    contentDescription = null
+                                )
+                            },
+                            label = {
+                                Text(text = destination.label)
                             }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = destination.icon),
-                                contentDescription = null
-                            )
-                        },
-                        label = {
-                            Text(text = destination.label)
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ serialization = "1.6.3"
 playServicesAuth = "20.4.1"
 sqlDelight = "2.0.1"
 coil = "2.6.0"
+playServicesAds = "22.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +53,7 @@ com-google-firebase-storage = { group = "com.google.firebase", name = "firebase-
 app-cash-sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 app-cash-sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+com-google-android-gms-play-services-ads = {  module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds"  }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
