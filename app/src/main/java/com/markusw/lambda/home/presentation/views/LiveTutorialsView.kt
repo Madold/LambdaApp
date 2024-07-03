@@ -2,6 +2,9 @@
 
 package com.markusw.lambda.home.presentation.views
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,8 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
@@ -63,11 +68,23 @@ fun LiveTutorialsView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(liveTutorials, key = { it.roomId }) { mentoring ->
+                val animatable = remember {
+                    Animatable(0.5f)
+                }
+
+                LaunchedEffect(key1 = true) {
+                    animatable.animateTo(1f, tween(350, easing = FastOutSlowInEasing))
+                }
+
                 LiveMentoringCard(
                     mentoring = mentoring,
                     onEvent = onEvent,
-                    modifier = Modifier,
-                    loggedUser = state.loggedUser
+                    modifier = Modifier
+                        .graphicsLayer {
+                            this.scaleX = animatable.value
+                            this.scaleY = animatable.value
+                        },
+                    loggedUser = state.loggedUser,
                 )
             }
         }
