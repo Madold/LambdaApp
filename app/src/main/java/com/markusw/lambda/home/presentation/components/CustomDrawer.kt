@@ -1,7 +1,5 @@
 package com.markusw.lambda.home.presentation.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,14 +13,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.markusw.lambda.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.home.presentation.NavigationItem
 
 @Composable
@@ -30,6 +35,7 @@ fun CustomDrawer(
     selectedNavigationItem: NavigationItem,
     onNavigationItemClick: (NavigationItem) -> Unit,
     onClose: () -> Unit,
+    user: User,
     modifier: Modifier = Modifier
 ) {
 
@@ -53,20 +59,22 @@ fun CustomDrawer(
             }
         }
 
-        Box(
+        AsyncImage(
+            model = ImageRequest
+                .Builder(LocalContext.current)
+                .data(user.photoUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
             modifier = Modifier
                 .size(160.dp)
                 .clip(CircleShape)
-                .background(Color.White)
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
+            ,
+            contentScale = ContentScale.FillWidth
+        )
 
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.lambda_logo),
-                contentDescription = null,
-            )
-        }
+        Text(text = user.displayName, color = MaterialTheme.colorScheme.surface, fontWeight = FontWeight.Bold)
+
 
         Spacer(modifier = Modifier.height(40.dp))
         NavigationItem.entries.toTypedArray().take(2).forEach { navigationItem ->

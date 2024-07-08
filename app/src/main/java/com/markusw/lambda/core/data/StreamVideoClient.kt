@@ -27,7 +27,7 @@ class StreamVideoClient(
 
             client = StreamVideoBuilder(
                 context = context,
-                apiKey = "kegs4gg73yzr",
+                apiKey = "y8ybwab9286t",
                 user = StreamSdkUser(
                     id = userId,
                     name = username,

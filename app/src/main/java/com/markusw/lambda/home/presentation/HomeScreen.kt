@@ -107,7 +107,8 @@ fun HomeScreen(
                 drawerState = CustomDrawerState.Closed
             },
             modifier = Modifier
-                .statusBarsPadding()
+                .statusBarsPadding(),
+            user = state.loggedUser
         )
 
         NavHost(navController = homeNavController, startDestination = NavigationItem.Home.label) {
