@@ -77,7 +77,8 @@ fun CustomDrawer(
 
 
         Spacer(modifier = Modifier.height(40.dp))
-        NavigationItem.entries.toTypedArray().take(2).forEach { navigationItem ->
+
+        NavigationItem.entries.toTypedArray().take(1).forEach { navigationItem ->
             NavigationItemView(
                 navigationItem = navigationItem,
                 selected = navigationItem == selectedNavigationItem,
@@ -97,7 +98,7 @@ fun CustomDrawer(
                             onNavigationItemClick(NavigationItem.Shopping)
                         }
 
-                        else -> {}
+                        else -> onNavigationItemClick(navigationItem)
                     }
                 }
             )

@@ -378,6 +378,13 @@ class HomeViewModel @Inject constructor(
                 }
 
             }
+
+            HomeEvent.Logout -> {
+                viewModelScope.launch {
+                    authService.logout()
+                    channel.send(HomeViewModelEvent.LogoutSuccess)
+                }
+            }
         }
     }
 

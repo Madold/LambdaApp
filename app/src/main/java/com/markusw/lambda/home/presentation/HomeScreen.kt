@@ -93,13 +93,8 @@ fun HomeScreen(
             onNavigationItemClick = {
                 selectedNavigationItem = it
 
-                if (it != NavigationItem.Exit) {
-                    homeNavController.navigate(it.label) {
-                        popUpTo(homeNavController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                    }
+                if (it == NavigationItem.Exit) {
+                    onEvent(HomeEvent.Logout)
                 }
 
             },
@@ -111,8 +106,10 @@ fun HomeScreen(
             user = state.loggedUser
         )
 
-        NavHost(navController = homeNavController, startDestination = NavigationItem.Home.label) {
-
+        NavHost(
+            navController = homeNavController,
+            startDestination = NavigationItem.Home.label
+        ) {
             composable(route = NavigationItem.Home.label) {
                 Scaffold(
                     modifier = Modifier
@@ -185,11 +182,7 @@ fun HomeScreen(
                     homeNavController = homeNavController
                 )
             }
-
-
         }
-
-
     }
 
 

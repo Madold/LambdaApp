@@ -86,6 +86,14 @@ class MainActivity : ComponentActivity() {
                                     is HomeViewModelEvent.VideoClientInitialized -> {
                                         navController.navigate("${Screens.Video.route}/${event.roomId}")
                                     }
+
+                                    HomeViewModelEvent.LogoutSuccess -> {
+                                        navController.navigate(Screens.Login.route) {
+                                            popUpTo(Screens.Home.route) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
