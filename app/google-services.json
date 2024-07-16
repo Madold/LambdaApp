@@ -14,11 +14,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "992816761973-1ri8ds5u2r3t1c032e9ndiodc3g1co0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.markusw.lambda",
+            "certificate_hash": "ad1b192ff55c898a30a6e179a0e45ea8f5c4c89d"
+          }
+        },
+        {
           "client_id": "992816761973-etra5afjis20gpmgjo7hqlfm4q5qc8mh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.markusw.lambda",
             "certificate_hash": "3a6334b9d7da974a934b091b6de205b3510eed4c"
+          }
+        },
+        {
+          "client_id": "992816761973-f1b8dfo0pdn3hnnlbdl5kv2lek7cuaqs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.markusw.lambda",
+            "certificate_hash": "c576571230d0fe4c848294687005a2836d1cf60d"
+          }
+        },
+        {
+          "client_id": "992816761973-u8enrj8aoevhn4g1df3thqfebe8a2ecf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.markusw.lambda",
+            "certificate_hash": "604e4199c327cb7c42fe311cac0192a3413d95d4"
           }
         },
         {
