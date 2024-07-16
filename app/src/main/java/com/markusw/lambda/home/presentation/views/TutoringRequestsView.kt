@@ -2,14 +2,19 @@
 
 package com.markusw.lambda.home.presentation.views
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,11 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -66,30 +68,58 @@ fun TutoringRequestView(
             }
         )
 
-        LazyColumn(
+        AnimatedContent(
+            targetState = pendingRequests.isEmpty(),
+            label = "",
             modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(pendingRequests, key = { it.roomId }) { mentoring ->
-
-                val animatable = remember {
-                    Animatable(0.5f)
+                .weight(1f)
+                .fillMaxWidth()
+        ) { isEmpty ->
+            if (isEmpty) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.mentoring_requests),
+                        contentDescription = null
+                    )
+                    Text(text = "Aun no hay solicitudes de tutorías")
+                    Text(text = "¡Realiza la primera!")
                 }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(pendingRequests, key = { it.roomId }) { mentoring ->
 
-                LaunchedEffect(key1 = true) {
-                    animatable.animateTo(1f, tween(350, easing = FastOutSlowInEasing))
-                }
+                        val animatable = remember {
+                            Animatable(0.5f)
+                        }
 
-                TutoringRequestCard(
-                    mentoring = mentoring,
-                    onEvent = onEvent,
-                    modifier = Modifier.graphicsLayer {
-                        this.scaleY = animatable.value
-                        this.scaleX = animatable.value
+                        LaunchedEffect(key1 = true) {
+                            animatable.animateTo(1f, tween(350, easing = FastOutSlowInEasing))
+                        }
+
+                        TutoringRequestCard(
+                            mentoring = mentoring,
+                            onEvent = onEvent,
+                            modifier = Modifier.graphicsLayer {
+                                this.scaleY = animatable.value
+                                this.scaleX = animatable.value
+                            },
+                            loggedUser = state.loggedUser
+                        )
                     }
-                )
+                }
             }
+
         }
     }
 

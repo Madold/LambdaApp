@@ -71,29 +71,6 @@ fun ProvideMentoringDialog(
                         Text(text = "Descripción corta de la tutoría")
                     }
                 )
-                TextField(
-                    value = state.mentoringPrice.toString(),
-                    onValueChange = {
-                        try {
-                            val price = it.toLong()
-
-                            if (price >= 0) {
-                                onEvent(HomeEvent.ChangeMentoringPrice(price))
-                            }
-                        } catch (e: NumberFormatException) {
-                            onEvent(HomeEvent.ChangeMentoringPrice(0))
-                        }
-                    },
-                    label = {
-                        Text(text = "Precio")
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    prefix = {
-                        Text(text = "COP")
-                    },
-                )
 
                 SmallButton(onClick = {
                     imagePickerLauncher.launch(

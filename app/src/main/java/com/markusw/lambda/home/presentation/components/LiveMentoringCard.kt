@@ -60,16 +60,6 @@ fun LiveMentoringCard(
         mutableStateOf(false)
     }
 
-    val buttonText = remember(mentoring.price) {
-        if (mentoring.author?.id == loggedUser.id) {
-            "Unirse"
-        } else if (mentoring.price == 0L) {
-            "Unirse: GRATIS"
-        } else {
-            "Unirse COP: $${mentoring.price}"
-        }
-    }
-
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -153,36 +143,10 @@ fun LiveMentoringCard(
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (mentoring.author?.id != loggedUser.id) {
-                            SmallButton(
-                                onClick = { isDonationDialogVisible = true },
-                                colors = ButtonDefaults.outlinedButtonColors()
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_donation),
-                                    contentDescription = null
-                                )
-                                Text(text = "Donar")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
                         SmallButton(onClick = {
-                            if (mentoring.price == 0L) {
-                                onEvent(HomeEvent.JoinLiveMentoring(mentoringId = mentoring.roomId))
-                                return@SmallButton
-                            }
-
-                            if (mentoring.author?.id != loggedUser.id) {
-                                isPaymentDialogVisible = true
-
-                                return@SmallButton
-                            }
-
                             onEvent(HomeEvent.JoinLiveMentoring(mentoringId = mentoring.roomId))
                         }) {
-                            Text(buttonText)
+                            Text("Unirse")
                         }
                     }
 
