@@ -36,3 +36,7 @@ Clone the project with Android Studio and compile it, remember to put your own F
 ![](https://github.com/Madold/imgs/blob/main/lambda2.png?raw=true)
 ![](https://github.com/Madold/imgs/blob/main/lambda3.png?raw=true)
 ![](https://github.com/Madold/imgs/blob/main/lambda4.png?raw=true)
+![](https://github.com/Madold/imgs/blob/main/lambda5.png?raw=true)
+![](https://github.com/Madold/imgs/blob/main/lambda6.png?raw=true)
+![](https://github.com/Madold/imgs/blob/main/lambda7.png?raw=true)
+![](https://github.com/Madold/imgs/blob/main/lambda8.png?raw=true)
