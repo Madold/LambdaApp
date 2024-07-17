@@ -33,6 +33,6 @@ Clone the project with Android Studio and compile it, remember to put your own F
 
 # Preview
 <div>
-  ![](https://github.com/Madold/imgs/blob/main/lambda1.png?raw=true)
-![](https://github.com/Madold/imgs/blob/main/lambda2.png?raw=true)
+  <img src="https://github.com/Madold/imgs/blob/main/lambda1.png?raw=true" />
+  <img src="https://github.com/Madold/imgs/blob/main/lambda2.png?raw=true" />
 </div>
