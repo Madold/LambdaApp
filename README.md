@@ -34,3 +34,4 @@ Clone the project with Android Studio and compile it, remember to put your own F
 # Preview
 ![](https://github.com/Madold/imgs/blob/main/lambda1.png?raw=true)
 ![](https://github.com/Madold/imgs/blob/main/lambda2.png?raw=true)
+![](https://github.com/Madold/imgs/blob/main/lambda3.png?raw=true)
