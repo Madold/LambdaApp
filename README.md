@@ -32,5 +32,7 @@ Lambda is a virtual learning platform where students can request and tutor in a 
 Clone the project with Android Studio and compile it, remember to put your own FIREBASE credentials and link the app to you own firebase project. Also replace the stream sdk api key with you own api key
 
 # Preview
-![](https://github.com/Madold/imgs/blob/main/lambda1.png?raw=true)
+<div>
+  ![](https://github.com/Madold/imgs/blob/main/lambda1.png?raw=true)
 ![](https://github.com/Madold/imgs/blob/main/lambda2.png?raw=true)
+</div>
