@@ -20,6 +20,7 @@ playServicesAuth = "20.4.1"
 sqlDelight = "2.0.1"
 coil = "2.6.0"
 playServicesAds = "22.6.0"
+splash = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ app-cash-sqldelight-android-driver = { module = "app.cash.sqldelight:android-dri
 app-cash-sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 com-google-android-gms-play-services-ads = {  module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds"  }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

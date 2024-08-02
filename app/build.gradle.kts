@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.app.cash.sqldelight.coroutines.extensions)
     implementation(libs.io.coil.kt.coil.compose)
     implementation(libs.com.google.android.gms.play.services.ads)
+    implementation(libs.androidx.core.splashscreen)
 
     //Test implementations
     testImplementation(libs.junit)
