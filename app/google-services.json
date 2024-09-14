@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "992816761973-53gtimms78djkgfltg3hjj7ib0ch0atn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.markusw.lambda",
+            "certificate_hash": "b24888a1f94abe9b4651d8638167f1c8b93949ba"
+          }
+        },
+        {
           "client_id": "992816761973-etra5afjis20gpmgjo7hqlfm4q5qc8mh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

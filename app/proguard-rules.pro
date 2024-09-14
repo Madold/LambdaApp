@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.markusw.lambda.core.domain.model.* { *; }
+-keep class com.markusw.lambda.home.data.model.* { *; }
+-keep class com.markusw.lambda.core.data.model.* { *; }
+-dontwarn io.getstream.video.android.mock.StreamPreviewDataUtilsKt
+
