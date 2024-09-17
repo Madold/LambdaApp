@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -37,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.markusw.lambda.R
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
+import com.markusw.lambda.home.presentation.TopicFilter
 import com.markusw.lambda.home.presentation.components.DonationStatusDialog
 import com.markusw.lambda.home.presentation.components.JoiningLiveSessionDialog
 import com.markusw.lambda.home.presentation.components.LiveMentoringCard
@@ -49,8 +57,11 @@ fun LiveTutorialsView(
     onNavigationButtonClick: () -> Unit = {}
 ) {
 
-    val liveTutorials = remember(state.tutorials) {
-        state.tutorials.filter { it.author != null }
+    val liveTutorials = remember(state.tutorials, state.selectedTopicFilter) {
+        state.tutorials.filter { it.author != null && it.topic == state.selectedTopicFilter.label }
+    }
+    var isFiltersMenuVisible by rememberSaveable {
+        mutableStateOf(false)
     }
 
     Column(
@@ -69,6 +80,43 @@ fun LiveTutorialsView(
                         imageVector = Icons.Default.Menu,
                         contentDescription = null
                     )
+                }
+            },
+            actions = {
+                IconButton(onClick = {
+                    isFiltersMenuVisible = true
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_filter),
+                        contentDescription = null
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = isFiltersMenuVisible,
+                    onDismissRequest = {
+                        isFiltersMenuVisible = false
+                    }
+                ) {
+                    TopicFilter.entries.forEach { topic ->
+                        DropdownMenuItem(
+                            onClick = {
+                                isFiltersMenuVisible = false
+                                onEvent(HomeEvent.ChangeSelectedTopicFilter(topic))
+                            },
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(topic.label)
+                                    if (state.selectedTopicFilter == topic) {
+                                        Icon(painter = painterResource(R.drawable.ic_check), contentDescription = null)
+                                    }
+                                }
+                            },
+                        )
+                    }
                 }
             }
         )

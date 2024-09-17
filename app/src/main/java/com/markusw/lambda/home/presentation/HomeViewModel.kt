@@ -140,7 +140,8 @@ class HomeViewModel @Inject constructor(
                         Mentoring(
                             title = state.value.mentoringTitle,
                             requesterDescription = state.value.mentoringRequesterDescription,
-                            requester = authService.getLoggedUser() ?: User()
+                            requester = authService.getLoggedUser() ?: User(),
+                            topic = state.value.mentoringTopic
                         )
                     )) {
                         is Result.Error -> {
@@ -383,6 +384,22 @@ class HomeViewModel @Inject constructor(
                 viewModelScope.launch {
                     authService.logout()
                     channel.send(HomeViewModelEvent.LogoutSuccess)
+                }
+            }
+
+            is HomeEvent.ChangeSelectedTopicFilter -> {
+                _state.update {
+                    it.copy(
+                        selectedTopicFilter = event.topic
+                    )
+                }
+            }
+
+            is HomeEvent.ChangeMentoringTopic -> {
+                _state.update {
+                    it.copy(
+                        mentoringTopic = event.label
+                    )
                 }
             }
         }

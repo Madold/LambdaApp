@@ -9,5 +9,6 @@ fun Mentoring.toDto(): MentoringDto = MentoringDto(
     requesterDescription = this.requesterDescription,
     title = this.title,
     description = this.description,
-    coverUrl = this.coverUrl
+    coverUrl = this.coverUrl,
+    topic = this.topic
 )

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.markusw.lambda.home.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -6,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -14,9 +17,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,12 +38,17 @@ import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.presentation.components.TextField
 import com.markusw.lambda.home.presentation.HomeEvent
 import com.markusw.lambda.home.presentation.HomeState
+import com.markusw.lambda.home.presentation.TopicFilter
 
 @Composable
 fun TutoringRequestDialog(
     state: HomeState,
     onEvent: (HomeEvent) -> Unit
 ) {
+
+    var isComboBoxExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Dialog(onDismissRequest = {
         if (!state.isSavingMentoring) {
@@ -67,6 +84,44 @@ fun TutoringRequestDialog(
                         Text(text = "Descripción")
                     }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = isComboBoxExpanded,
+                    onExpandedChange = {
+                        isComboBoxExpanded = !isComboBoxExpanded
+                    }
+                ) {
+                    OutlinedTextField(
+                        value = state.mentoringTopic,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isComboBoxExpanded)
+                        },
+                        modifier = Modifier.menuAnchor(),
+                        label = {
+                            Text("Tema")
+                        }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = isComboBoxExpanded,
+                        onDismissRequest = { isComboBoxExpanded = false }
+                    ) {
+                        TopicFilter.entries.forEach { topic ->
+                            DropdownMenuItem(
+                                text = { Text(text = topic.label) },
+                                onClick = {
+                                    isComboBoxExpanded = false
+                                    onEvent(HomeEvent.ChangeMentoringTopic(topic.label))
+                                }
+                            )
+                        }
+                    }
+
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

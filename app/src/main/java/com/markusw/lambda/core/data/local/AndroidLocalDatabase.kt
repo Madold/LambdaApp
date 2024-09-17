@@ -65,7 +65,8 @@ class AndroidLocalDatabase(
                         price = dto.price,
                         coverUrl = dto.coverUrl,
                         requesterId = dto.requesterId,
-                        authorId = dto.authorId
+                        authorId = dto.authorId,
+                        topic = dto.topic
                     )
             }
         }
@@ -120,7 +121,8 @@ class AndroidLocalDatabase(
                         totalRevenue = tutorialDetail.totalRevenue.toLong(),
                         description = tutorialDetail.description,
                         requesterDescription = tutorialDetail.requesterDescription,
-                        title = tutorialDetail.title
+                        title = tutorialDetail.title,
+                        topic = tutorialDetail.topic
                     )
                 }
             }

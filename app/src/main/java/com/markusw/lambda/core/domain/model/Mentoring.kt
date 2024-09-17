@@ -10,5 +10,6 @@ data class Mentoring(
     val author: User? = null,
     val title: String = "",
     val description: String = "",
-    val coverUrl: String = ""
+    val coverUrl: String = "",
+    val topic: String = ""
 )

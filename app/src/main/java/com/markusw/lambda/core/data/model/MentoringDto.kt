@@ -9,5 +9,6 @@ data class MentoringDto(
     val authorId: String? = null,
     val title: String = "",
     val description: String = "",
-    val coverUrl: String = ""
+    val coverUrl: String = "",
+    val topic: String = ""
 )

@@ -10,6 +10,7 @@ data class HomeState(
     val isRequestTutoringDialogVisible: Boolean = false,
     val mentoringTitle: String = "",
     val mentoringDescription: String = "",
+    val mentoringTopic: String = "",
     val mentoringRequesterDescription: String = "",
     val mentoringCoverUri: String = "",
     val mentoringPrice: Long = 0,
@@ -24,4 +25,5 @@ data class HomeState(
     val isPaymentProcessing: Boolean = false,
     val paymentState: PaymentState = PaymentState.InProcess,
     val isJoiningLiveMentoring: Boolean = false,
+    val selectedTopicFilter: TopicFilter = TopicFilter.Math
 )
