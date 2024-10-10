@@ -22,6 +22,7 @@ coil = "2.6.0"
 playServicesAds = "22.6.0"
 splash = "1.0.0"
 crashlyticsPlugin = "2.9.9"
+indicators = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ app-cash-sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coro
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 com-google-android-gms-play-services-ads = {  module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds"  }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash" }
+jetpack-loading = { module = "com.github.MahboubehSeyedpour:jetpack-loading", version.ref = "indicators" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

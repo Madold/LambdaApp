@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -55,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(route = Screens.Login.route) {
                         val viewModel = hiltViewModel<LoginViewModel>()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
 
                         LaunchedEffect(key1 = Unit) {
                             viewModel.events.collectLatest { viewModelEvent ->
@@ -74,7 +74,8 @@ class MainActivity : ComponentActivity() {
                         }
 
                         LoginScreen(
-                            onEvent = viewModel::onEvent
+                            onEvent = viewModel::onEvent,
+                            state = state
                         )
                     }
 

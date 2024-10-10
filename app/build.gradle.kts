@@ -56,6 +56,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.jetpack.loading)
     implementation(libs.com.google.firebase.crashlytics)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

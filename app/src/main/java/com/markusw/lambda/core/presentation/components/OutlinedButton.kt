@@ -34,37 +34,28 @@ fun OutlinedButton(
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
         containerColor = Color.White,
     ),
-    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(
+        pressedElevation = 0.dp,
+        defaultElevation = 0.dp,
+        disabledElevation = 0.dp
+    ),
     border: BorderStroke = BorderStroke(
-        width = 0.5.dp,
+        width = 3.dp,
         color = Color(0xFFF2F4F5)
     ),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val buttonScale by animateFloatAsState(
-        targetValue = if (isPressed) 0.9f else 1f,
-        label = "Button Scale"
-    )
-
     MaterialButton(
         onClick = onClick,
-        modifier = modifier
-            .scale(buttonScale)
-            .shadow(
-                elevation = 10.dp
-            )
-        ,
+        modifier = modifier,
         enabled = enabled,
         shape = RoundedCornerShape(14.dp),
         colors = colors,
         elevation = elevation,
         border = border,
         contentPadding = contentPadding,
-        interactionSource = interactionSource,
         content = content
     )
 

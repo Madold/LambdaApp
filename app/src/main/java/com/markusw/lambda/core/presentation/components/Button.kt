@@ -28,34 +28,30 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(
+        defaultElevation = 0.dp,
+        pressedElevation = 0.dp,
+        disabledElevation = 0.dp
+    ),
     border: BorderStroke? = null,
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 24.dp,
+        top = 16.dp,
+        end = 24.dp,
+        bottom = 16.dp
+    ),
     content: @Composable RowScope.() -> Unit
 ) {
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val buttonScale by animateFloatAsState(
-        targetValue = if (isPressed) 0.9f else 1f,
-        label = "Button Scale"
-    )
-
     MaterialButton(
         onClick = onClick,
-        modifier = modifier
-            .scale(buttonScale)
-            .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(14.dp)
-            ),
+        modifier = modifier,
         enabled = enabled,
         shape = RoundedCornerShape(14.dp),
         colors = colors,
         elevation = elevation,
         border = border,
         contentPadding = contentPadding,
-        interactionSource = interactionSource,
         content = content
     )
 }
