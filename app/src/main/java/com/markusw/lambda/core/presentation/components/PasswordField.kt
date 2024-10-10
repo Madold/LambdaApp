@@ -45,9 +45,7 @@ fun PasswordField(
             }
         },
         visualTransformation = visualTransformation,
-        label = {
-            Text(text = "Contraseña")
-        }
+        labelText = "Contraseña"
     )
 
 }

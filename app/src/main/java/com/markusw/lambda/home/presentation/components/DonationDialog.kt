@@ -87,9 +87,7 @@ fun DonationDialog(
                 }
 
                 TextField(
-                    label = {
-                        Text(text = "Monto")
-                    },
+                    labelText = "Monto",
                     value = amount.toString(),
                     onValueChange = { newAmount ->
                         try {

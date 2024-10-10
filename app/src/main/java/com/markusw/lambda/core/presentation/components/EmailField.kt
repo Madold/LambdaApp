@@ -21,9 +21,7 @@ fun EmailField(
         trailingIcon = {
             Icon(painter = painterResource(id = R.drawable.ic_email), contentDescription = null)
         },
-        label = {
-            Text(text = "Correo")
-        }
+        labelText = "Correo"
     )
 
 }

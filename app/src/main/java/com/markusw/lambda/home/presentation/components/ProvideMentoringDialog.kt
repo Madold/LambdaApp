@@ -67,9 +67,7 @@ fun ProvideMentoringDialog(
                     onValueChange = {
                         onEvent(HomeEvent.ChangeMentoringDescription(it))
                     },
-                    label = {
-                        Text(text = "Descripción corta de la tutoría")
-                    }
+                    labelText = "Descripción corta de la tutoría"
                 )
 
                 SmallButton(onClick = {

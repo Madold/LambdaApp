@@ -9,11 +9,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -27,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -42,6 +46,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.EmailField
 import com.markusw.lambda.core.presentation.components.LargeButton
+import com.markusw.lambda.core.presentation.components.OutlinedButton
 import com.markusw.lambda.core.presentation.components.PasswordField
 import com.markusw.lambda.core.utils.Result
 import kotlinx.coroutines.launch
@@ -93,97 +98,150 @@ fun LoginScreen(
         modifier = modifier
     ) { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box {
+
+            Image(
+                painter = painterResource(
+                    id = R.drawable.top_ilustration
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .scale(3.6f)
+                    .offset(x = -10.dp)
+            )
+
+            Image(
+                painter = painterResource(
+                    id = R.drawable.bottom_ilustration
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .scale(3.6f)
+                    .offset(y = 10.dp)
+            )
 
             Column(
-                modifier = Modifier.weight(1.5f),
-                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lambda_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(150.dp)
-                )
-                Text(
-                    text = "¡Bienvenido a Lambda!",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
-                    ),
-                )
-                Text(
-                    text = "Transforma tus dudas en oportunidades de aprendizajee",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Light
-                    ),
-                )
-                /*EmailField(
-                    value = "",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth()
-                )
-                PasswordField(
-                    value = "",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Text(text = buildAnnotatedString {
-                        append("¿No tienes una cuenta? ")
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Bold,
-                                textDecoration = TextDecoration.Underline
-                            )
-                        ) {
-                            append("Registrate aquí")
-                        }
-                    })
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                LargeButton(onClick = { /*TODO*/ }) {
-                    Text(text = "Iniciar sesión")
-                }*/
-            }
 
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                Text(text = "O inicia sesión con")
-                IconButton(
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            launcher.launch(
-                                IntentSenderRequest.Builder(
-                                    googleAuthUiClient.signIn() ?: return@launch
-                                ).build()
-                            )
-                        }
-                    }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_google),
+                        painter = painterResource(id = R.drawable.lambda_logo),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(150.dp)
                     )
+                    Text(
+                        text = "¡Bienvenido a Lambda!",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp
+                        ),
+                    )
+                    Text(
+                        text = "Transforma tus dudas en oportunidades de aprendizaje",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Light
+                        ),
+                    )
+
+                    Spacer(Modifier.height(36.dp))
+
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            coroutineScope.launch {
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        googleAuthUiClient.signIn() ?: return@launch
+                                    ).build()
+                                )
+                            }
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_google),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(text = "Continuar con Google", color = Color.Black)
+                        }
+                    }
+
+                    /*EmailField(
+                        value = "",
+                        onValueChange = {},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    PasswordField(
+                        value = "",
+                        onValueChange = {},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(text = buildAnnotatedString {
+                            append("¿No tienes una cuenta? ")
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    textDecoration = TextDecoration.Underline
+                                )
+                            ) {
+                                append("Registrate aquí")
+                            }
+                        })
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LargeButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Iniciar sesión")
+                    }*/
                 }
+
+                /*Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(text = "O inicia sesión con")
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        googleAuthUiClient.signIn() ?: return@launch
+                                    ).build()
+                                )
+                            }
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_google),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }*/
             }
         }
 

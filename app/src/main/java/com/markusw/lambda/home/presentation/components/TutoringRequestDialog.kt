@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.markusw.lambda.core.presentation.components.OutlinedButton
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.presentation.components.TextField
 import com.markusw.lambda.home.presentation.HomeEvent
@@ -73,16 +74,12 @@ fun TutoringRequestDialog(
                 TextField(
                     value = state.mentoringTitle,
                     onValueChange = { onEvent(HomeEvent.ChangeMentoringTitle(it)) },
-                    label = {
-                        Text(text = "Titulo")
-                    }
+                    labelText = "Titulo"
                 )
                 TextField(
                     value = state.mentoringRequesterDescription,
                     onValueChange = { onEvent(HomeEvent.ChangeMentoringRequesterDescription(it)) },
-                    label = {
-                        Text(text = "Descripción")
-                    }
+                    labelText = "Descripción"
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -128,7 +125,7 @@ fun TutoringRequestDialog(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SmallButton(
+                    OutlinedButton(
                         onClick = {
                             if (!state.isSavingMentoring) {
                                 onEvent(HomeEvent.ChangeRequestTutoringDialogVisibility(false))
