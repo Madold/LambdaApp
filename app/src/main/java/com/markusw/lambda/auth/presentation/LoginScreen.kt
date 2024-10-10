@@ -25,16 +25,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.identity.Identity
 import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.EmailField
@@ -105,13 +108,24 @@ fun LoginScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.lambda_logo),
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(150.dp)
                 )
                 Text(
-                    text = "Iniciar sesión",
-                    style = MaterialTheme.typography.titleLarge
+                    text = "¡Bienvenido a Lambda!",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    ),
                 )
-                EmailField(
+                Text(
+                    text = "Transforma tus dudas en oportunidades de aprendizajee",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Light
+                    ),
+                )
+                /*EmailField(
                     value = "",
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
@@ -141,7 +155,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 LargeButton(onClick = { /*TODO*/ }) {
                     Text(text = "Iniciar sesión")
-                }
+                }*/
             }
 
             Column(

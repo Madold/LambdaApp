@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button as MaterialButton
 
@@ -51,4 +52,16 @@ fun Button(
         interactionSource = interactionSource,
         content = content
     )
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+fun ButtonPreview(modifier: Modifier = Modifier) {
+    Button(
+        onClick = {}
+    ) {
+
+    }
 }
