@@ -43,6 +43,17 @@ class StreamVideoClient(
         call = client?.call("default", roomId)
     }
 
+    override suspend fun finishCall(): Result<Unit> {
+        return try {
+            call?.end()
+            resetVideoClient()
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.Error(e.message.toString())
+        }
+    }
+
     override suspend fun joinCall(): Result<Call> {
         return try {
 
@@ -73,12 +84,16 @@ class StreamVideoClient(
     override fun disconnect(): Result<Unit> {
         return try {
             call?.leave()
-            client?.logOut()
-            client = null
+            resetVideoClient()
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
+    }
+
+    private fun resetVideoClient() {
+        client?.logOut()
+        client = null
     }
 
     override fun getCall(): Call? {

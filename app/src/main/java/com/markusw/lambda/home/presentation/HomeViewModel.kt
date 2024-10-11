@@ -227,7 +227,7 @@ class HomeViewModel @Inject constructor(
                         photoUrl = loggedUser.photoUrl
                     )
 
-                    channel.send(HomeViewModelEvent.VideoClientInitialized(updatedMentoring.roomId))
+                    channel.send(HomeViewModelEvent.VideoClientInitialized(updatedMentoring.roomId, authorId = loggedUser.id))
 
                     _state.update {
                         it.copy(
@@ -330,7 +330,10 @@ class HomeViewModel @Inject constructor(
                                 photoUrl = loggedUser.photoUrl
                             )
 
-                            channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoring.roomId))
+                            channel.send(HomeViewModelEvent.VideoClientInitialized(
+                                roomId = event.mentoring.roomId,
+                                event.mentoring.author?.id ?: "1234"
+                            ))
                             _state.update {
                                 it.copy(
                                     isJoiningLiveMentoring = false
@@ -367,7 +370,7 @@ class HomeViewModel @Inject constructor(
                                 userId = state.value.loggedUser.id,
                                 photoUrl = state.value.loggedUser.photoUrl
                             )
-                            channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId))
+                            channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId, authorId = event.authorId))
 
                             _state.update {
                                 it.copy(

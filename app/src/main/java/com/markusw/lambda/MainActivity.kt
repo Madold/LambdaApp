@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                             viewModel.events.collectLatest { event ->
                                 when (event) {
                                     is HomeViewModelEvent.VideoClientInitialized -> {
-                                        navController.navigate("${Screens.Video.route}/${event.roomId}")
+                                        navController.navigate("${Screens.Video.route}/${event.roomId}/${event.authorId}")
                                     }
 
                                     HomeViewModelEvent.LogoutSuccess -> {
@@ -108,9 +108,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(
-                        route = "${Screens.Video.route}/{roomId}",
+                        route = "${Screens.Video.route}/{roomId}/{authorId}",
                         arguments = listOf(
                             navArgument("roomId") {
+                                type = NavType.StringType
+                            },
+                            navArgument("authorId") {
                                 type = NavType.StringType
                             }
                         )

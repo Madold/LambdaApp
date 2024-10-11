@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.markusw.lambda.auth.domain.AuthService
 import com.markusw.lambda.core.domain.VideoClient
+import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoCallViewModel @Inject constructor(
     private val videoClient: VideoClient,
+    private val authService: AuthService,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -33,11 +36,16 @@ class VideoCallViewModel @Inject constructor(
 
     init {
         val roomId = savedStateHandle.get<String>("roomId") ?: "main-room"
+        val authorId = savedStateHandle.get<String>("authorId") ?: "1234"
+        val loggedUser = authService.getLoggedUser()
         videoClient.callToRoom(roomId)
 
         _state.update {
             it.copy(
-                call = videoClient.getCall()
+                call = videoClient.getCall(),
+                roomId = roomId,
+                authorId = authorId,
+                loggedUser = loggedUser ?: User()
             )
         }
     }
@@ -48,13 +56,31 @@ class VideoCallViewModel @Inject constructor(
                 videoClient.disconnect()
                 _state.update {
                     it.copy(
-                        callStatus = CallStatus.Ended
+                        callStatus = CallStatus.Leaved
                     )
                 }
             }
 
             is VideoCallEvent.JoinCall -> {
                 joinCall()
+            }
+
+            VideoCallEvent.FinishSession -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    when (val result = videoClient.finishCall()) {
+                        is Result.Error -> {
+
+                        }
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    callStatus = CallStatus.Finished
+                                )
+                            }
+                        }
+                    }
+                    //TODO: Delete call from remote database
+                }
             }
         }
     }
@@ -67,7 +93,7 @@ class VideoCallViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.update {
                         it.copy(
-                            callStatus = CallStatus.Ended
+                            callStatus = CallStatus.Leaved
                         )
                     }
                     Log.d(TAG, "Call error ${result.message}")

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.markusw.lambda.video.presentation
 
 import android.Manifest
@@ -8,34 +10,55 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.utils.ext.pop
-import com.markusw.lambda.video.presentation.components.ShareScreenAction
 import com.markusw.lambda.video.presentation.components.ToggleScreenShareAction
 import io.getstream.video.android.compose.permission.rememberCallPermissionsState
+import io.getstream.video.android.compose.theme.VideoTheme
+import io.getstream.video.android.compose.ui.components.base.GenericContainer
 import io.getstream.video.android.compose.ui.components.call.activecall.CallContent
 import io.getstream.video.android.compose.ui.components.call.controls.actions.DefaultOnCallActionHandler
 import io.getstream.video.android.compose.ui.components.call.controls.actions.FlipCameraAction
+import io.getstream.video.android.compose.ui.components.call.controls.actions.LeaveCallAction
 import io.getstream.video.android.compose.ui.components.call.controls.actions.ToggleCameraAction
 import io.getstream.video.android.compose.ui.components.call.controls.actions.ToggleMicrophoneAction
+import io.getstream.video.android.core.Call
 import io.getstream.video.android.core.call.state.LeaveCall
 
 @Composable
@@ -57,6 +80,9 @@ fun VideoCallScreen(
             }
         }
     )
+    var isContextMenuVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val isMicrophoneEnabled = state.call?.microphone?.isEnabled?.collectAsState()
     val isCameraEnabled = state.call?.camera?.isEnabled?.collectAsState()
@@ -74,7 +100,7 @@ fun VideoCallScreen(
                     Text(text = "Joining Call")
                 }
 
-                CallStatus.Ended -> {
+                CallStatus.Leaved -> {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -85,7 +111,26 @@ fun VideoCallScreen(
                             contentDescription = null,
                         )
 
-                        Text(text = "Llamada finalizada")
+                        Text(text = "Has abandonado la llamada")
+
+                        SmallButton(onClick = { navController.pop() }) {
+                            Text(text = "Volver")
+                        }
+                    }
+                }
+
+                CallStatus.Finished -> {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.video_call),
+                            contentDescription = null,
+                        )
+
+                        Text(text = "Esta llamada ha sido finalizada")
 
                         SmallButton(onClick = { navController.pop() }) {
                             Text(text = "Volver")
@@ -108,6 +153,7 @@ fun VideoCallScreen(
                     } else {
                         emptyList()
                     }
+
 
                     state.call?.let { call ->
                         CallContent(
@@ -169,6 +215,51 @@ fun VideoCallScreen(
 
                                 }
                             },
+                            appBarContent = {
+                                Row(
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .height(VideoTheme.dimens.componentHeightL),
+                                    verticalAlignment = CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    CallAppBarLeftContent(
+                                        call = it,
+                                        title = ""
+                                    )
+
+                                    Column {
+                                        LeaveCallAction {
+                                            isContextMenuVisible = true
+                                        }
+
+                                        DropdownMenu(
+                                            expanded = isContextMenuVisible,
+                                            onDismissRequest = { isContextMenuVisible = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text("Salir")
+                                                },
+                                                onClick = {
+                                                    onEvent(VideoCallEvent.Disconnect)
+                                                }
+                                            )
+                                            if (state.loggedUser.id == state.authorId) {
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text("Finalizar")
+                                                    },
+                                                    onClick = {
+                                                        onEvent(VideoCallEvent.FinishSession)
+                                                    }
+                                                )
+                                            }
+                                        }
+
+                                    }
+                                }
+                            },
                             onCallAction = { action ->
                                 if (action == LeaveCall) {
                                     onEvent(VideoCallEvent.Disconnect)
@@ -185,6 +276,69 @@ fun VideoCallScreen(
             }
         }
     }
+}
 
 
+@Composable
+fun RowScope.CallAppBarLeftContent(call: Call, title: String) {
+    val isReconnecting by call.state.isReconnecting.collectAsStateWithLifecycle()
+    val isRecording by call.state.recording.collectAsStateWithLifecycle()
+    val duration by call.state.duration.collectAsStateWithLifecycle()
+
+    CalLLeftContent(
+        modifier = Modifier.align(CenterVertically),
+        text = duration?.toString() ?: title,
+        isRecording = isRecording,
+        isReconnecting = isReconnecting,
+    )
+}
+
+@Composable
+private fun CalLLeftContent(
+    modifier: Modifier = Modifier,
+    text: String,
+    isRecording: Boolean,
+    isReconnecting: Boolean,
+) {
+    GenericContainer(modifier = modifier) {
+        Row {
+            if (isRecording) {
+                Box(
+                    modifier = Modifier
+                        .size(VideoTheme.dimens.componentHeightS)
+                        .clip(VideoTheme.shapes.circle)
+                        .background(
+                            color = VideoTheme.colors.alertWarning,
+                            shape = VideoTheme.shapes.circle,
+                        )
+                        .border(2.dp, VideoTheme.colors.basePrimary, VideoTheme.shapes.circle),
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_encrypted),
+                    tint = VideoTheme.colors.alertSuccess,
+                    contentDescription = "call encrypted",
+                )
+            }
+            Text(
+                modifier = Modifier
+                    .padding(
+                        start = VideoTheme.dimens.componentPaddingStart,
+                        end = VideoTheme.dimens.componentPaddingEnd,
+                    ),
+                text = if (isReconnecting) {
+                    "Reconectando..."
+                } else if (isRecording) {
+                    "Esta sesión se está grabando"
+                } else {
+                    text
+                },
+                fontSize = VideoTheme.dimens.textSizeS,
+                color = VideoTheme.colors.baseSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Start,
+            )
+        }
+    }
 }
