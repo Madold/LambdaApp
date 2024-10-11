@@ -30,13 +30,14 @@ CREATE TABLE mentoring_entity (
     description TEXT NOT NULL,
     requesterDescription TEXT NOT NULL,
     topic TEXT NOT NULL,
+    state TEXT NOT NULL,
     FOREIGN KEY (requesterId) REFERENCES user_entity(id),
     FOREIGN KEY (authorId) REFERENCES user_entity(id)
 );
 
 insertMentoring:
-INSERT INTO mentoring_entity (roomId, title, price, requesterId, authorId, requesterDescription, description, coverUrl, topic)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO mentoring_entity (roomId, title, price, requesterId, authorId, requesterDescription, description, coverUrl, topic, state)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getAllTutorialsWithDetails:
 SELECT
@@ -49,7 +50,8 @@ SELECT
     m.description,
     m.requesterDescription,
     (IFNULL(SUM(d.amount), 0) + (COUNT(DISTINCT mp.userId) * m.price)) AS totalRevenue,
-    m.topic
+    m.topic,
+    m.state
 FROM mentoring_entity m
 LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
 LEFT JOIN mentoring_payment_entity mp ON m.roomId = mp.mentoringId
@@ -65,7 +67,9 @@ SELECT
     m.coverUrl,
     m.description,
     m.requesterDescription,
-    (IFNULL(SUM(d.amount), 0) + (COUNT(DISTINCT mp.userId) * m.price)) AS totalRevenue
+    (IFNULL(SUM(d.amount), 0) + (COUNT(DISTINCT mp.userId) * m.price)) AS totalRevenue,
+    m.topic,
+    m.state
 FROM mentoring_entity m
 LEFT JOIN donation_entity d ON m.roomId = d.mentoringId
 LEFT JOIN mentoring_payment_entity mp ON m.roomId = mp.mentoringId

@@ -11,5 +11,5 @@ data class MentoringDto(
     val description: String = "",
     val coverUrl: String = "",
     val topic: String = "",
-    val active: Boolean = true
+    val state: String = ""
 )

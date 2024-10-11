@@ -141,7 +141,8 @@ class HomeViewModel @Inject constructor(
                             title = state.value.mentoringTitle,
                             requesterDescription = state.value.mentoringRequesterDescription,
                             requester = authService.getLoggedUser() ?: User(),
-                            topic = state.value.mentoringTopic
+                            topic = state.value.mentoringTopic,
+                            state = "active"
                         )
                     )) {
                         is Result.Error -> {
@@ -370,6 +371,7 @@ class HomeViewModel @Inject constructor(
                                 userId = state.value.loggedUser.id,
                                 photoUrl = state.value.loggedUser.photoUrl
                             )
+
                             channel.send(HomeViewModelEvent.VideoClientInitialized(roomId = event.mentoringId, authorId = event.authorId))
 
                             _state.update {

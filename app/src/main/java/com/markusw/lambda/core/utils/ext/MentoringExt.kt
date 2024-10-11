@@ -10,5 +10,6 @@ fun Mentoring.toDto(): MentoringDto = MentoringDto(
     title = this.title,
     description = this.description,
     coverUrl = this.coverUrl,
-    topic = this.topic
+    topic = this.topic,
+    state = this.state
 )

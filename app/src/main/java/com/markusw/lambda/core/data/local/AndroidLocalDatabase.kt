@@ -66,7 +66,8 @@ class AndroidLocalDatabase(
                         coverUrl = dto.coverUrl,
                         requesterId = dto.requesterId,
                         authorId = dto.authorId,
-                        topic = dto.topic
+                        topic = dto.topic,
+                        state = dto.state
                     )
             }
         }

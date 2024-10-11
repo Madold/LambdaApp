@@ -21,4 +21,7 @@ interface RemoteDatabase {
     fun getPaymentsDto(): Flow<List<MentoringPaymentDto>>
     suspend fun registerAttendanceDto(attendanceDto: AttendanceDto)
     fun getAttendanceDto(): Flow<List<AttendanceDto>>
+    fun getCallStateById(roomId: String): Flow<String>
+    suspend fun finishCall(roomId: String)
+    suspend fun deleteMentoringById(roomId: String)
 }

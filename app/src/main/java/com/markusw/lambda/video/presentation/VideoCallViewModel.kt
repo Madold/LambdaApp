@@ -7,12 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.markusw.lambda.auth.domain.AuthService
 import com.markusw.lambda.core.domain.VideoClient
 import com.markusw.lambda.core.domain.model.User
+import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,9 +22,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoCallViewModel @Inject constructor(
+    private val remoteDatabase: RemoteDatabase,
     private val videoClient: VideoClient,
-    private val authService: AuthService,
-    savedStateHandle: SavedStateHandle
+    authService: AuthService,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(VideoCallState())
@@ -39,6 +42,22 @@ class VideoCallViewModel @Inject constructor(
         val authorId = savedStateHandle.get<String>("authorId") ?: "1234"
         val loggedUser = authService.getLoggedUser()
         videoClient.callToRoom(roomId)
+
+        viewModelScope.launch {
+            remoteDatabase
+                .getCallStateById(roomId)
+                .collectLatest { callState ->
+                    if (callState == "finished") {
+                        _state.update { it.copy(callStatus = CallStatus.Finished) }
+
+                        // This ensures that the participants are also disconnected from the call and not just the host.
+                        if (authorId != loggedUser?.id) {
+                            videoClient.disconnect()
+                        }
+
+                    }
+                }
+        }
 
         _state.update {
             it.copy(
@@ -72,14 +91,10 @@ class VideoCallViewModel @Inject constructor(
 
                         }
                         is Result.Success -> {
-                            _state.update {
-                                it.copy(
-                                    callStatus = CallStatus.Finished
-                                )
-                            }
+                            remoteDatabase.finishCall(state.value.roomId ?: "1234")
+                            remoteDatabase.deleteMentoringById(state.value.roomId ?: "1234")
                         }
                     }
-                    //TODO: Delete call from remote database
                 }
             }
         }

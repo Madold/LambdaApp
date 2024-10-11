@@ -195,5 +195,44 @@ class FireStoreDatabase(
         }.conflate()
     }
 
+    override fun getCallStateById(roomId: String): Flow<String> {
+        return callbackFlow {
+                val snapshotListener =  firestore
+                .collection(TUTORING)
+                .document(roomId)
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let {
+                        val mentoring = it.toObject(MentoringDto::class.java)
+                        trySend(mentoring?.state ?: "finished")
+                    }
+                }
+
+            awaitClose {
+                snapshotListener.remove()
+            }
+        }.conflate()
+    }
+
+    override suspend fun finishCall(roomId: String) {
+        firestore
+            .collection(TUTORING)
+            .document(roomId)
+            .update(
+                mapOf(
+                    "state" to "finished"
+                )
+            ).await()
+    }
+
+    override suspend fun deleteMentoringById(roomId: String) {
+        firestore
+            .collection(TUTORING)
+            .document(roomId)
+            .delete()
+            .await()
+    }
+
 
 }
