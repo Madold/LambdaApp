@@ -5,7 +5,7 @@ import io.getstream.video.android.core.Call
 
 data class VideoCallState(
     val call: Call? = null,
-    val callStatus: CallStatus? = null,
+    val callStatus: CallStatus? = CallStatus.WaitingForApproval,
     val roomId: String? = null,
     val authorId: String? = null,
     val loggedUser: User = User()

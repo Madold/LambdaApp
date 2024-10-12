@@ -56,6 +56,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.stream.chat)
+    implementation(libs.stream.chat.offline)
+    implementation(libs.material.icons.extended)
     implementation(libs.jetpack.loading)
     implementation(libs.com.google.firebase.crashlytics)
     implementation(libs.androidx.core.ktx)

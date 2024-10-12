@@ -15,10 +15,12 @@ ksp = "2.0.0-1.0.21"
 daggerHilt = "2.49"
 navigationCompose = "2.7.7"
 stream = "0.5.8"
+streamChatCompose = "6.4.3"
 serialization = "1.6.3"
 playServicesAuth = "20.4.1"
 sqlDelight = "2.0.1"
 coil = "2.6.0"
+materialIconsExtended = "1.6.0-alpha08"
 playServicesAds = "22.6.0"
 splash = "1.0.0"
 crashlyticsPlugin = "2.9.9"
@@ -48,6 +50,9 @@ androidx-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", v
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
 stream-video = { module = "io.getstream:stream-video-android-core", version.ref = "stream" }
 stream-video-android-ui-compose = { module = "io.getstream:stream-video-android-ui-compose", version.ref = "stream" }
+stream-chat = { module = "io.getstream:stream-chat-android-compose", version.ref = "streamChatCompose" }
+stream-chat-offline = { module = "io.getstream:stream-chat-android-offline", version.ref = "streamChatCompose" }
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
 com-google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 com-google-android-gms-play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }

@@ -4,5 +4,6 @@ enum class CallStatus {
     Joining,
     Running,
     Leaved,
-    Finished
+    Finished,
+    WaitingForApproval
 }
