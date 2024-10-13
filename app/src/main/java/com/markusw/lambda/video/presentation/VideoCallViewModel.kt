@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.markusw.lambda.auth.domain.AuthService
+import com.markusw.lambda.core.domain.ChatClient
 import com.markusw.lambda.core.domain.VideoClient
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class VideoCallViewModel @Inject constructor(
     private val remoteDatabase: RemoteDatabase,
     private val videoClient: VideoClient,
+    private val chatClient: ChatClient,
     authService: AuthService,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -42,6 +44,28 @@ class VideoCallViewModel @Inject constructor(
         val authorId = savedStateHandle.get<String>("authorId") ?: "1234"
         val loggedUser = authService.getLoggedUser()
         videoClient.callToRoom(roomId)
+
+        viewModelScope.launch {
+            val isSuccessfully = chatClient.initChatClient(
+                username = loggedUser?.displayName ?: "Anonymous",
+                userId = loggedUser?.id ?: "1234"
+            )
+
+            if (isSuccessfully) {
+                _state.update {
+                    it.copy(
+                        chatConnectionStatus = ChatConnectionStatus.Connected
+                    )
+                }
+            } else {
+                _state.update {
+                    it.copy(
+                        chatConnectionStatus = ChatConnectionStatus.Error
+                    )
+                }
+            }
+
+        }
 
         viewModelScope.launch {
             remoteDatabase

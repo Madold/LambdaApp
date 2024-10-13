@@ -1,4 +1,3 @@
-
 package com.markusw.lambda.video.presentation
 
 import android.Manifest
@@ -48,6 +47,9 @@ import com.markusw.lambda.R
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.utils.ext.pop
 import com.markusw.lambda.video.presentation.components.ToggleScreenShareAction
+import io.getstream.chat.android.compose.ui.messages.MessagesScreen
+import io.getstream.chat.android.compose.ui.theme.ChatTheme
+import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
 import io.getstream.video.android.compose.permission.rememberCallPermissionsState
 import io.getstream.video.android.compose.theme.VideoTheme
 import io.getstream.video.android.compose.ui.components.base.GenericContainer
@@ -119,7 +121,26 @@ fun VideoCallScreen(
                 }
 
                 CallStatus.WaitingForApproval -> {
-                    Text("Meate")
+                    when (state.chatConnectionStatus) {
+                        ChatConnectionStatus.Connected -> {
+                            ChatTheme {
+                                MessagesScreen(
+                                    viewModelFactory = MessagesViewModelFactory(
+                                        channelId = "messaging:1234",
+                                        context = LocalContext.current,
+                                    )
+                                )
+                            }
+                        }
+
+                        ChatConnectionStatus.Connecting -> {
+                            Text(text = "Connecting chat...")
+                        }
+
+                        ChatConnectionStatus.Error -> {
+                            Text(text = "Chat connection erro :(")
+                        }
+                    }
                 }
 
                 CallStatus.Finished -> {
@@ -139,6 +160,10 @@ fun VideoCallScreen(
                             Text(text = "Volver")
                         }
                     }
+                }
+
+                CallStatus.AccessGranted -> {
+
                 }
 
                 else -> {

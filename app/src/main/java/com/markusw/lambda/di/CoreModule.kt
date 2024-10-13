@@ -4,10 +4,12 @@ import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.markusw.lambda.core.data.StreamChatClient
 import com.markusw.lambda.core.data.StreamVideoClient
 import com.markusw.lambda.core.data.local.AndroidLocalDatabase
 import com.markusw.lambda.core.data.remote.FireStoreDatabase
 import com.markusw.lambda.core.data.repository.AndroidUsersRepository
+import com.markusw.lambda.core.domain.ChatClient
 import com.markusw.lambda.core.domain.VideoClient
 import com.markusw.lambda.core.domain.local.LocalDatabase
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
@@ -54,6 +56,12 @@ object CoreModule {
     @Singleton
     fun provideLocalDatabase(sqlDriver: SqlDriver): LocalDatabase {
         return AndroidLocalDatabase(LambdaDatabase(sqlDriver))
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatClient(@ApplicationContext context: Context): ChatClient {
+        return StreamChatClient(context)
     }
 
 }

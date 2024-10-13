@@ -1,5 +1,8 @@
 package com.markusw.lambda.core.domain
 
+import com.markusw.lambda.core.data.ConnectionResult
+
 interface ChatClient {
-    fun initChatClient(username: String, userId: String, photoUrl: String)
+    suspend fun initChatClient(username: String, userId: String): ConnectionResult
+    fun disconnect()
 }
