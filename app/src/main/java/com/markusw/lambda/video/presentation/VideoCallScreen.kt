@@ -15,14 +15,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.markusw.lambda.R
+import com.markusw.lambda.core.presentation.components.Button
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.utils.ext.pop
 import com.markusw.lambda.video.presentation.components.ToggleScreenShareAction
+import com.spr.jetpack_loading.components.indicators.LineSpinFadeLoaderIndicator
+import com.spr.jetpack_loading.components.indicators.gridIndicator.GridPulsatingDot
 import io.getstream.chat.android.compose.ui.messages.MessagesScreen
 import io.getstream.chat.android.compose.ui.theme.ChatTheme
 import io.getstream.chat.android.compose.viewmodel.messages.MessagesViewModelFactory
@@ -98,7 +104,7 @@ fun VideoCallScreen(
         ) {
             when (state.callStatus) {
                 CallStatus.Joining -> {
-                    Text(text = "Joining Call")
+                    Text(text = "Uniendose a la llamada...")
                 }
 
                 CallStatus.Leaved -> {
@@ -122,23 +128,59 @@ fun VideoCallScreen(
 
                 CallStatus.WaitingForApproval -> {
                     when (state.chatConnectionStatus) {
+
                         ChatConnectionStatus.Connected -> {
-                            ChatTheme {
-                                MessagesScreen(
-                                    viewModelFactory = MessagesViewModelFactory(
-                                        channelId = "messaging:1234",
-                                        context = LocalContext.current,
+
+                            var isMessageScreenVisible by rememberSaveable {
+                                mutableStateOf(false)
+                            }
+
+                            if (isMessageScreenVisible) {
+                                ChatTheme {
+                                    MessagesScreen(
+                                        viewModelFactory = MessagesViewModelFactory(
+                                            channelId = "messaging:1234",
+                                            context = LocalContext.current,
+                                        ),
+                                        onBackPressed = {
+                                            isMessageScreenVisible = false
+                                        }
                                     )
+                                }
+                            } else {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(53.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(text = "Esperando a que el tutor apruebe la entrada")
+                                    GridPulsatingDot(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Button(onClick = { isMessageScreenVisible = true }) {
+                                        Text(text = "Abrir chat con el tutor")
+                                        Spacer(Modifier.width(8.dp))
+                                        Icon(painterResource(R.drawable.ic_chat), null)
+                                    }
+                                }
+                            }
+
+
+                        }
+
+                        ChatConnectionStatus.Connecting -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "Connectando a los servicios de Lambda")
+                                Spacer(Modifier.height(46.dp))
+                                LineSpinFadeLoaderIndicator(
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
 
-                        ChatConnectionStatus.Connecting -> {
-                            Text(text = "Connecting chat...")
-                        }
-
                         ChatConnectionStatus.Error -> {
-                            Text(text = "Chat connection erro :(")
+                            Text(text = "Error al conectar con los servicios :(")
                         }
                     }
                 }
@@ -163,7 +205,20 @@ fun VideoCallScreen(
                 }
 
                 CallStatus.AccessGranted -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(32.dp)
+                    ) {
+                        Text(
+                            text = "Acceso concedido, esperando a que el tutor inicie la sesión",
+                            textAlign = TextAlign.Center
+                        )
 
+                        LineSpinFadeLoaderIndicator(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                    }
                 }
 
                 else -> {

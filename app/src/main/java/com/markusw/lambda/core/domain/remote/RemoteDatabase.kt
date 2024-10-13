@@ -7,10 +7,12 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
+import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteDatabase {
     fun getUsers(): Flow<List<User>>
+    suspend fun getRemoteUserById(userId: String): User?
     suspend fun saveUser(user: User)
     suspend fun insertMentoring(mentoring: Mentoring)
     fun getTutoringSessionsDto(): Flow<List<MentoringDto>>
@@ -24,4 +26,7 @@ interface RemoteDatabase {
     fun getCallStateById(roomId: String): Flow<String>
     suspend fun finishCall(roomId: String)
     suspend fun deleteMentoringById(roomId: String)
+    fun getCallAccess(roomId: String, userId: String): Flow<String>
+    suspend fun registerAccess(access: CallAccessDto)
+    suspend fun checkAccessExist(roomId: String, userId: String): Boolean
 }

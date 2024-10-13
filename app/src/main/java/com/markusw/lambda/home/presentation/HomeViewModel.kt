@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
     private val donationRepository: DonationRepository,
     private val validateCoverUri: ValidateCoverUri,
     private val paymentRepository: PaymentRepository,
-    private val attendanceRepository: AttendanceRepository,
+    private val attendanceRepository: AttendanceRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())

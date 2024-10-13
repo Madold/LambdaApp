@@ -10,6 +10,7 @@ import com.markusw.lambda.core.utils.ext.toDto
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
+import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -26,6 +27,7 @@ class FireStoreDatabase(
         const val DONATIONS_COLLECTION = "donate"
         const val MENTORING_PAYMENTS_COLLECTION = "mentoring_payment"
         const val ATTENDS_COLLECTION = "attends"
+        const val WAITING_ROOMS = "waiting_rooms"
     }
 
     override fun getUsers(): Flow<List<User>> {
@@ -47,6 +49,15 @@ class FireStoreDatabase(
                 snapshotListener.remove()
             }
         }.conflate()
+    }
+
+    override suspend fun getRemoteUserById(userId: String): User? {
+        return firestore
+            .collection(USERS_COLLECTIONS)
+            .document(userId)
+            .get()
+            .await()
+            .toObject(User::class.java)
     }
 
     override suspend fun saveUser(user: User) {
@@ -197,7 +208,7 @@ class FireStoreDatabase(
 
     override fun getCallStateById(roomId: String): Flow<String> {
         return callbackFlow {
-                val snapshotListener =  firestore
+            val snapshotListener = firestore
                 .collection(TUTORING)
                 .document(roomId)
                 .addSnapshotListener { value, error ->
@@ -232,6 +243,44 @@ class FireStoreDatabase(
             .document(roomId)
             .delete()
             .await()
+    }
+
+    override fun getCallAccess(roomId: String, userId: String): Flow<String> {
+        return callbackFlow {
+            val snapshotListener = firestore
+                .collection(WAITING_ROOMS)
+                .document("$roomId$userId")
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let { document ->
+                        trySend(
+                            document.toObject(CallAccessDto::class.java)?.accessState ?: "waiting"
+                        )
+                    }
+                }
+
+            awaitClose {
+                snapshotListener.remove()
+            }
+        }.conflate()
+    }
+
+    override suspend fun registerAccess(accessDto: CallAccessDto) {
+        firestore
+            .collection(WAITING_ROOMS)
+            .document("${accessDto.roomId}${accessDto.user.id}")
+            .set(accessDto)
+            .await()
+    }
+
+    override suspend fun checkAccessExist(roomId: String, userId: String): Boolean {
+        return firestore
+            .collection(WAITING_ROOMS)
+            .document("$roomId$userId")
+            .get()
+            .await()
+            .exists()
     }
 
 

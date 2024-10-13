@@ -13,6 +13,7 @@ import com.markusw.lambda.core.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -46,6 +47,7 @@ class VideoCallViewModel @Inject constructor(
         videoClient.callToRoom(roomId)
 
         viewModelScope.launch {
+            delay(1200)
             val isSuccessfully = chatClient.initChatClient(
                 username = loggedUser?.displayName ?: "Anonymous",
                 userId = loggedUser?.id ?: "1234"
@@ -81,6 +83,22 @@ class VideoCallViewModel @Inject constructor(
 
                     }
                 }
+        }
+
+
+        viewModelScope.launch {
+            remoteDatabase
+                .getCallAccess(roomId, loggedUser?.id ?: "1234")
+                .collectLatest { acesss ->
+                    if (acesss == "granted") {
+                        _state.update {
+                            it.copy(
+                                callStatus = CallStatus.AccessGranted
+                            )
+                        }
+                    }
+                }
+
         }
 
         _state.update {
