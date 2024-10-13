@@ -69,6 +69,7 @@ class VideoCallViewModel @Inject constructor(
 
         }
 
+        //Flow for everyone
         viewModelScope.launch {
             remoteDatabase
                 .getCallStateById(roomId)
@@ -85,21 +86,24 @@ class VideoCallViewModel @Inject constructor(
                 }
         }
 
-
-        viewModelScope.launch {
-            remoteDatabase
-                .getCallAccess(roomId, loggedUser?.id ?: "1234")
-                .collectLatest { acesss ->
-                    if (acesss == "granted") {
-                        _state.update {
-                            it.copy(
-                                callStatus = CallStatus.AccessGranted
-                            )
+        //Flow only for participants
+        if (authorId != loggedUser?.id) {
+            viewModelScope.launch {
+                remoteDatabase
+                    .getCallAccess(roomId, loggedUser?.id ?: "1234")
+                    .collectLatest { acesss ->
+                        if (acesss == "granted") {
+                            _state.update {
+                                it.copy(
+                                    callStatus = CallStatus.AccessGranted
+                                )
+                            }
                         }
                     }
-                }
 
+            }
         }
+
 
         _state.update {
             it.copy(
