@@ -46,6 +46,12 @@ class VideoCallViewModel @Inject constructor(
         val loggedUser = authService.getLoggedUser()
         videoClient.callToRoom(roomId)
 
+        _state.update {
+            it.copy(
+                callStatus = if (authorId == loggedUser?.id) CallStatus.Idle else CallStatus.WaitingForApproval
+            )
+        }
+
         viewModelScope.launch {
             delay(1200)
             val isSuccessfully = chatClient.initChatClient(
@@ -81,8 +87,12 @@ class VideoCallViewModel @Inject constructor(
                         if (authorId != loggedUser?.id) {
                             videoClient.disconnect()
                         }
-
                     }
+
+                    if (callState == "running") {
+                        _state.update { it.copy(callStatus = CallStatus.Running) }
+                    }
+
                 }
         }
 
@@ -101,6 +111,21 @@ class VideoCallViewModel @Inject constructor(
                         }
                     }
 
+            }
+        }
+
+        //Flow only for host
+        if (authorId == loggedUser?.id) {
+            viewModelScope.launch {
+                remoteDatabase
+                    .getWaitingConfirmations(roomId)
+                    .collectLatest { confirmations ->
+                        _state.update {
+                            it.copy(
+                                waitingConfirmations = confirmations
+                            )
+                        }
+                    }
             }
         }
 
@@ -143,6 +168,22 @@ class VideoCallViewModel @Inject constructor(
                     }
                 }
             }
+
+            is VideoCallEvent.AcceptCall -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    remoteDatabase.acceptCall(event.dto)
+                }
+            }
+            is VideoCallEvent.RejectCall -> {
+                viewModelScope.launch {
+                    remoteDatabase.rejectCall(event.dto)
+                }
+            }
+            is VideoCallEvent.StartCall -> {
+                viewModelScope.launch {
+                    remoteDatabase.startCall(state.value.roomId ?: "1234")
+                }
+            }
         }
     }
 
@@ -166,7 +207,6 @@ class VideoCallViewModel @Inject constructor(
                             callStatus = CallStatus.Running
                         )
                     }
-                    Log.d(TAG, "Call success")
                 }
             }
         }

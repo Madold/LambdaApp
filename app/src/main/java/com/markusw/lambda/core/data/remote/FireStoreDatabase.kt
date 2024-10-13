@@ -10,6 +10,7 @@ import com.markusw.lambda.core.utils.ext.toDto
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
+import com.markusw.lambda.video.WaitingConfirmation
 import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -281,6 +282,65 @@ class FireStoreDatabase(
             .get()
             .await()
             .exists()
+    }
+
+    override fun getWaitingConfirmations(roomId: String): Flow<List<WaitingConfirmation>> {
+        return callbackFlow {
+            val snapshotListener =  firestore
+                .collection(WAITING_ROOMS)
+                .addSnapshotListener { value, error ->
+                    error?.let { close(it) }
+
+                    value?.let { snapshot ->
+                        val dtos = snapshot.toObjects(CallAccessDto::class.java)
+
+                        val result = dtos
+                            .filter { it.roomId == roomId && it.accessState != "granted" }
+                            .map { WaitingConfirmation(dto = it) }
+
+                        trySend(result)
+                    }
+                }
+
+            awaitClose {
+                snapshotListener.remove()
+            }
+
+        }.conflate()
+
+    }
+
+    override suspend fun acceptCall(dto: CallAccessDto) {
+        firestore
+            .collection(WAITING_ROOMS)
+            .document("${dto.roomId}${dto.user.id}")
+            .update(
+                mapOf(
+                    "accessState" to "granted"
+                )
+            ).await()
+    }
+
+    override suspend fun rejectCall(dto: CallAccessDto) {
+        firestore
+            .collection(WAITING_ROOMS)
+            .document("${dto.roomId}${dto.user.id}")
+            .update(
+                mapOf(
+                    "accessState" to "rejected"
+                )
+            ).await()
+    }
+
+    override suspend fun startCall(roomId: String) {
+        firestore
+            .collection(TUTORING)
+            .document(roomId)
+            .update(
+                mapOf(
+                    "state" to "running"
+                )
+            )
     }
 
 

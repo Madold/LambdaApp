@@ -6,5 +6,6 @@ enum class CallStatus {
     Leaved,
     Finished,
     WaitingForApproval,
-    AccessGranted
+    AccessGranted,
+    Idle
 }

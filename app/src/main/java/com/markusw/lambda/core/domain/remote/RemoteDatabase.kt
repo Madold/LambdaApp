@@ -7,6 +7,7 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
+import com.markusw.lambda.video.WaitingConfirmation
 import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.flow.Flow
 
@@ -29,4 +30,8 @@ interface RemoteDatabase {
     fun getCallAccess(roomId: String, userId: String): Flow<String>
     suspend fun registerAccess(access: CallAccessDto)
     suspend fun checkAccessExist(roomId: String, userId: String): Boolean
+    fun getWaitingConfirmations(roomId: String): Flow<List<WaitingConfirmation>>
+    suspend fun acceptCall(dto: CallAccessDto)
+    suspend fun rejectCall(dto: CallAccessDto)
+    suspend fun startCall(roomId: String)
 }
