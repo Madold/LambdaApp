@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -122,7 +123,10 @@ fun HomeScreen(
                             AdmobBanner(
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            NavigationBar {
+                            NavigationBar(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.surface
+                            ) {
                                 HomeBottomDestination.entries().forEach { destination ->
                                     NavigationBarItem(
                                         selected = selectedDestinationRoute == destination.route,
@@ -138,12 +142,15 @@ fun HomeScreen(
                                         icon = {
                                             Icon(
                                                 painter = painterResource(id = destination.icon),
-                                                contentDescription = null
+                                                contentDescription = null,
                                             )
                                         },
                                         label = {
                                             Text(text = destination.label)
-                                        }
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedTextColor = MaterialTheme.colorScheme.surface
+                                        )
                                     )
                                 }
                             }
