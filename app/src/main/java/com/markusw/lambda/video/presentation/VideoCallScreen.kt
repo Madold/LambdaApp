@@ -149,7 +149,7 @@ fun VideoCallScreen(
                                     ChatTheme {
                                         MessagesScreen(
                                             viewModelFactory = MessagesViewModelFactory(
-                                                channelId = "messaging:1234",
+                                                channelId = "messaging:${state.chatChannelId}",
                                                 context = context,
                                             ),
                                             onBackPressed = {
@@ -166,7 +166,10 @@ fun VideoCallScreen(
                                         GridPulsatingDot(
                                             color = MaterialTheme.colorScheme.primary
                                         )
-                                        Button(onClick = { isMessageScreenVisible = true }) {
+                                        Button(onClick = {
+                                            onEvent(VideoCallEvent.SetChatChannelId("${state.roomId}${state.loggedUser.id}"))
+                                            isMessageScreenVisible = true
+                                        }) {
                                             Text(text = "Abrir chat con el tutor")
                                             Spacer(Modifier.width(8.dp))
                                             Icon(painterResource(R.drawable.ic_chat), null)
@@ -227,6 +230,25 @@ fun VideoCallScreen(
                             LineSpinFadeLoaderIndicator(
                                 color = MaterialTheme.colorScheme.primary
                             )
+
+                        }
+                    }
+
+                    CallStatus.Error -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(32.dp)
+                        ) {
+                            Text(
+                                text = "Hubo un error al unirse a la sesión virtual. Intente de nuevo",
+                                textAlign = TextAlign.Center
+                            )
+
+                            Button(onClick = {
+                                navController.pop()
+                            } ) {
+                                Text(text = "Volver")
+                            }
 
                         }
                     }
@@ -373,48 +395,86 @@ fun VideoCallScreen(
             } else {
                 when (state.callStatus) {
                     CallStatus.Idle -> {
-                        Scaffold(
-                            topBar = {
-                                TopAppBar(
-                                    actions = {
-                                        OutlinedButton(
-                                            onClick = {
-                                                onEvent(VideoCallEvent.StartCall)
-                                            }
-                                        ) {
-                                            Text("Iniciar llamada")
-                                        }
-                                    },
-                                    title = {
-                                        Text(text = "")
+                        var isChatVisible by rememberSaveable {
+                            mutableStateOf(false)
+                        }
+
+                        if (isChatVisible) {
+                            ChatTheme {
+                                MessagesScreen(
+                                    viewModelFactory = MessagesViewModelFactory(
+                                        channelId = "messaging:${state.chatChannelId}",
+                                        context = context,
+                                    ),
+                                    onBackPressed = {
+                                        isChatVisible = false
                                     }
                                 )
                             }
-                        ) { innerPadding ->
-                            LazyColumn(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                items(
-                                    state.waitingConfirmations,
-                                    key = { it.dto.user.id }
-                                ) {
-                                    WaitingConfirmationItem(
-                                        confirmation = it,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onAccept = {
-                                            onEvent(VideoCallEvent.AcceptCall(it.dto))
+                        } else {
+                            Scaffold(
+                                topBar = {
+                                    TopAppBar(
+                                        actions = {
+                                            OutlinedButton(
+                                                onClick = {
+                                                    onEvent(VideoCallEvent.StartCall)
+                                                }
+                                            ) {
+                                                Text("Iniciar llamada")
+                                            }
                                         },
-                                        onReject = {
-                                            onEvent(VideoCallEvent.RejectCall(it.dto))
-                                        },
-                                        onChat = {
-
+                                        title = {
+                                            Text(text = "")
                                         }
                                     )
                                 }
+                            ) { innerPadding ->
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .padding(innerPadding)
+                                        .fillMaxSize(),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                ) {
+                                    items(
+                                        state.waitingConfirmations,
+                                        key = { it.dto.user.id }
+                                    ) {
+                                        WaitingConfirmationItem(
+                                            confirmation = it,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            onAccept = {
+                                                onEvent(VideoCallEvent.AcceptCall(it.dto))
+                                            },
+                                            onReject = {
+                                                onEvent(VideoCallEvent.RejectCall(it.dto))
+                                            },
+                                            onChat = {
+                                                onEvent(VideoCallEvent.SetChatChannelId("${it.dto.roomId}${it.dto.user.id}"))
+                                                isChatVisible = true
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    CallStatus.Leaved -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.video_call),
+                                contentDescription = null,
+                            )
+
+                            Text(text = "Has abandonado la llamada")
+
+                            SmallButton(onClick = { navController.pop() }) {
+                                Text(text = "Volver")
                             }
                         }
                     }
@@ -436,125 +496,176 @@ fun VideoCallScreen(
                         }
 
 
-                        state.call?.let { call ->
-                            CallContent(
-                                call = call,
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                permissions = rememberCallPermissionsState(
+                        if (state.isLoadingVideoCall) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "Connectando a los servicios de Lambda")
+                                Spacer(Modifier.height(46.dp))
+                                LineSpinFadeLoaderIndicator(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else {
+                            state.call?.let { call ->
+                                CallContent(
                                     call = call,
-                                    permissions = basePermissions + bluetoothConnectPermission + notificationPermission,
-                                    onPermissionsResult = { permissions ->
-                                        if (permissions.values.contains(false)) {
-                                            Toast.makeText(
-                                                context,
-                                                "Please grant all permissions to use this app.",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        } else {
-                                            onEvent(VideoCallEvent.JoinCall)
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    permissions = rememberCallPermissionsState(
+                                        call = call,
+                                        permissions = basePermissions + bluetoothConnectPermission + notificationPermission,
+                                        onPermissionsResult = { permissions ->
+                                            if (permissions.values.contains(false)) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Please grant all permissions to use this app.",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            } else {
+                                                onEvent(VideoCallEvent.JoinCall)
+                                            }
                                         }
-                                    }
-                                ),
-                                controlsContent = {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceEvenly
-                                    ) {
-                                        ToggleCameraAction(
-                                            isCameraEnabled = isCameraEnabled?.value ?: false,
-                                            onCallAction = { action ->
-                                                call.camera.setEnabled(action.isEnabled)
-                                            }
-                                        )
+                                    ),
+                                    controlsContent = {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                        ) {
+                                            ToggleCameraAction(
+                                                isCameraEnabled = isCameraEnabled?.value ?: false,
+                                                onCallAction = { action ->
+                                                    call.camera.setEnabled(action.isEnabled)
+                                                }
+                                            )
 
-                                        ToggleMicrophoneAction(
-                                            isMicrophoneEnabled = isMicrophoneEnabled?.value ?: false,
-                                            onCallAction = { action ->
-                                                call.microphone.setEnabled(action.isEnabled)
-                                            }
-                                        )
+                                            ToggleMicrophoneAction(
+                                                isMicrophoneEnabled = isMicrophoneEnabled?.value ?: false,
+                                                onCallAction = { action ->
+                                                    call.microphone.setEnabled(action.isEnabled)
+                                                }
+                                            )
 
-                                        FlipCameraAction(
-                                            onCallAction = {
-                                                call.camera.flip()
-                                            }
-                                        )
+                                            FlipCameraAction(
+                                                onCallAction = {
+                                                    call.camera.flip()
+                                                }
+                                            )
 
-                                        ToggleScreenShareAction(
-                                            isScreenSharing = isScreenSharing?.value ?: false,
-                                            onCallAction = { action ->
-                                                if (isScreenSharing?.value == true) {
-                                                    call.stopScreenSharing()
+                                            ToggleScreenShareAction(
+                                                isScreenSharing = isScreenSharing?.value ?: false,
+                                                onCallAction = { action ->
+                                                    if (isScreenSharing?.value == true) {
+                                                        call.stopScreenSharing()
 
-                                                    return@ToggleScreenShareAction
+                                                        return@ToggleScreenShareAction
+                                                    }
+
+                                                    mediaProjectionLauncher.launch(mediaProjectionManager.createScreenCaptureIntent())
+                                                }
+                                            )
+
+                                        }
+                                    },
+                                    appBarContent = {
+                                        Row(
+                                            modifier = modifier
+                                                .fillMaxWidth()
+                                                .height(VideoTheme.dimens.componentHeightL),
+                                            verticalAlignment = CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            CallAppBarLeftContent(
+                                                call = it,
+                                                title = ""
+                                            )
+
+                                            Column {
+                                                LeaveCallAction {
+                                                    isContextMenuVisible = true
                                                 }
 
-                                                mediaProjectionLauncher.launch(mediaProjectionManager.createScreenCaptureIntent())
-                                            }
-                                        )
-
-                                    }
-                                },
-                                appBarContent = {
-                                    Row(
-                                        modifier = modifier
-                                            .fillMaxWidth()
-                                            .height(VideoTheme.dimens.componentHeightL),
-                                        verticalAlignment = CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                    ) {
-                                        CallAppBarLeftContent(
-                                            call = it,
-                                            title = ""
-                                        )
-
-                                        Column {
-                                            LeaveCallAction {
-                                                isContextMenuVisible = true
-                                            }
-
-                                            DropdownMenu(
-                                                expanded = isContextMenuVisible,
-                                                onDismissRequest = { isContextMenuVisible = false },
-                                                modifier = Modifier.background(
-                                                    color = Color.White
-                                                )
-                                            ) {
-                                                DropdownMenuItem(
-                                                    text = {
-                                                        Text("Salir")
-                                                    },
-                                                    onClick = {
-                                                        onEvent(VideoCallEvent.Disconnect)
-                                                    }
-                                                )
-                                                if (state.loggedUser.id == state.authorId) {
+                                                DropdownMenu(
+                                                    expanded = isContextMenuVisible,
+                                                    onDismissRequest = { isContextMenuVisible = false },
+                                                    modifier = Modifier.background(
+                                                        color = Color.White
+                                                    )
+                                                ) {
                                                     DropdownMenuItem(
                                                         text = {
-                                                            Text("Finalizar")
+                                                            Text("Salir")
                                                         },
                                                         onClick = {
-                                                            onEvent(VideoCallEvent.FinishSession)
+                                                            onEvent(VideoCallEvent.Disconnect)
                                                         }
                                                     )
+                                                    if (state.loggedUser.id == state.authorId) {
+                                                        DropdownMenuItem(
+                                                            text = {
+                                                                Text("Finalizar")
+                                                            },
+                                                            onClick = {
+                                                                onEvent(VideoCallEvent.FinishSession)
+                                                            }
+                                                        )
+                                                    }
                                                 }
-                                            }
 
+                                            }
                                         }
-                                    }
-                                },
-                                onCallAction = { action ->
-                                    if (action == LeaveCall) {
+                                    },
+                                    onCallAction = { action ->
+                                        if (action == LeaveCall) {
+                                            onEvent(VideoCallEvent.Disconnect)
+                                        }
+
+                                        DefaultOnCallActionHandler.onCallAction(call, action)
+                                    },
+                                    onBackPressed = {
                                         onEvent(VideoCallEvent.Disconnect)
                                     }
+                                )
+                            }
+                        }
 
-                                    DefaultOnCallActionHandler.onCallAction(call, action)
-                                },
-                                onBackPressed = {
-                                    onEvent(VideoCallEvent.Disconnect)
-                                }
+                    }
+
+                    CallStatus.Finished -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.video_call),
+                                contentDescription = null,
                             )
+
+                            Text(text = "Esta llamada ha sido finalizada")
+
+                            SmallButton(onClick = { navController.pop() }) {
+                                Text(text = "Volver")
+                            }
+                        }
+                    }
+
+                    CallStatus.Error -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(32.dp)
+                        ) {
+                            Text(
+                                text = "Hubo un error al unirse a la sesión virtual. Intente de nuevo",
+                                textAlign = TextAlign.Center
+                            )
+
+                            Button(onClick = {
+                                navController.pop()
+                            } ) {
+                                Text(text = "Volver")
+                            }
+
                         }
                     }
 

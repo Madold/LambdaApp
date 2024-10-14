@@ -1,6 +1,7 @@
 package com.markusw.lambda.home.data.repository
 
 import android.content.Context
+import com.markusw.lambda.auth.domain.AuthService
 import com.markusw.lambda.core.domain.local.LocalDatabase
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
@@ -31,13 +32,16 @@ class AndroidAttendanceRepository(
             if (!isUserAccessAlreadyRegistered) {
 
                 val user = remoteDatabase.getRemoteUserById(attendanceDto.userId)
+                val mentoringDto = remoteDatabase.getRemoteMentoringById(attendanceDto.mentoringId)
 
-                remoteDatabase.registerAccess(
-                    CallAccessDto(
-                        roomId = attendanceDto.mentoringId,
-                        user = user ?: User()
+                if (mentoringDto?.authorId != attendanceDto.userId) {
+                    remoteDatabase.registerAccess(
+                        CallAccessDto(
+                            roomId = attendanceDto.mentoringId,
+                            user = user ?: User()
+                        )
                     )
-                )
+                }
             }
 
             Result.Success(Unit)

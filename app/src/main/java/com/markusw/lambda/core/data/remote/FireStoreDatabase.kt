@@ -61,6 +61,15 @@ class FireStoreDatabase(
             .toObject(User::class.java)
     }
 
+    override suspend fun getRemoteMentoringById(roomId: String): MentoringDto? {
+        return firestore
+            .collection(TUTORING)
+            .document(roomId)
+            .get()
+            .await()
+            .toObject(MentoringDto::class.java)
+    }
+
     override suspend fun saveUser(user: User) {
         firestore
             .collection(USERS_COLLECTIONS)

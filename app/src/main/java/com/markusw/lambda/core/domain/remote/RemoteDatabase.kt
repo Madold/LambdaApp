@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteDatabase {
     fun getUsers(): Flow<List<User>>
     suspend fun getRemoteUserById(userId: String): User?
+    suspend fun getRemoteMentoringById(roomId: String): MentoringDto?
     suspend fun saveUser(user: User)
     suspend fun insertMentoring(mentoring: Mentoring)
     fun getTutoringSessionsDto(): Flow<List<MentoringDto>>

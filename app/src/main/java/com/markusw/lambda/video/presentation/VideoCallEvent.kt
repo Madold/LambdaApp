@@ -8,5 +8,6 @@ sealed interface VideoCallEvent {
     data object FinishSession: VideoCallEvent
     data class AcceptCall(val dto: CallAccessDto): VideoCallEvent
     data class RejectCall(val dto: CallAccessDto): VideoCallEvent
+    data  class SetChatChannelId(val channelId: String) : VideoCallEvent
     data object StartCall: VideoCallEvent
 }

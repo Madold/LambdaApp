@@ -11,5 +11,7 @@ data class VideoCallState(
     val waitingConfirmations: List<WaitingConfirmation> = emptyList(),
     val roomId: String? = null,
     val authorId: String? = null,
-    val loggedUser: User = User()
+    val loggedUser: User = User(),
+    val isLoadingVideoCall: Boolean = false,
+    val chatChannelId: String? = null
 )

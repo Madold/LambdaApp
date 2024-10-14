@@ -44,6 +44,7 @@ class VideoCallViewModel @Inject constructor(
         val roomId = savedStateHandle.get<String>("roomId") ?: "main-room"
         val authorId = savedStateHandle.get<String>("authorId") ?: "1234"
         val loggedUser = authService.getLoggedUser()
+
         videoClient.callToRoom(roomId)
 
         _state.update {
@@ -90,7 +91,7 @@ class VideoCallViewModel @Inject constructor(
                     }
 
                     if (callState == "running") {
-                        _state.update { it.copy(callStatus = CallStatus.Running) }
+                        joinCall()
                     }
 
                 }
@@ -161,6 +162,7 @@ class VideoCallViewModel @Inject constructor(
                         is Result.Error -> {
 
                         }
+
                         is Result.Success -> {
                             remoteDatabase.finishCall(state.value.roomId ?: "1234")
                             remoteDatabase.deleteMentoringById(state.value.roomId ?: "1234")
@@ -174,14 +176,24 @@ class VideoCallViewModel @Inject constructor(
                     remoteDatabase.acceptCall(event.dto)
                 }
             }
+
             is VideoCallEvent.RejectCall -> {
                 viewModelScope.launch {
                     remoteDatabase.rejectCall(event.dto)
                 }
             }
+
             is VideoCallEvent.StartCall -> {
                 viewModelScope.launch {
                     remoteDatabase.startCall(state.value.roomId ?: "1234")
+                }
+            }
+
+            is VideoCallEvent.SetChatChannelId -> {
+                _state.update {
+                    it.copy(
+                        chatChannelId = event.channelId
+                    )
                 }
             }
         }
@@ -195,11 +207,13 @@ class VideoCallViewModel @Inject constructor(
                 is Result.Error -> {
                     _state.update {
                         it.copy(
-                            callStatus = CallStatus.Leaved
+                            callStatus = CallStatus.Error
                         )
                     }
+                    videoClient.disconnect()
                     Log.d(TAG, "Call error ${result.message}")
                 }
+
                 is Result.Success -> {
                     _state.update {
                         it.copy(
