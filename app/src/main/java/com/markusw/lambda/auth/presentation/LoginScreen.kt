@@ -189,8 +189,7 @@ fun LoginScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0x4D0D1117))
-                    ,
+                        .background(Color(0x4D0D1117)),
                     contentAlignment = Alignment.Center
                 ) {
                     LineSpinFadeLoaderIndicator(
