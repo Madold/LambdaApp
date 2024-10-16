@@ -10,7 +10,7 @@ import com.markusw.lambda.core.utils.ext.toDto
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
-import com.markusw.lambda.video.WaitingConfirmation
+import com.markusw.lambda.video.data.WaitingConfirmation
 import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

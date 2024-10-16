@@ -21,7 +21,8 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.markusw.lambda.core.domain.model.* { *; }
--keep class com.markusw.lambda.home.data.model.* { *; }
 -keep class com.markusw.lambda.core.data.model.* { *; }
+-keep class com.markusw.lambda.home.data.model.* { *; }
+-keep class com.markusw.lambda.video.data.* { *; }
 -dontwarn io.getstream.video.android.mock.StreamPreviewDataUtilsKt
 

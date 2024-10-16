@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.markusw.lambda.R
-import com.markusw.lambda.core.presentation.components.Button
 import com.markusw.lambda.core.presentation.components.OutlinedButton
-import com.markusw.lambda.video.WaitingConfirmation
+import com.markusw.lambda.video.data.WaitingConfirmation
 
 @Composable
 fun WaitingConfirmationItem(

@@ -7,7 +7,7 @@ import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.home.data.model.AttendanceDto
 import com.markusw.lambda.home.data.model.DonationDto
 import com.markusw.lambda.home.data.model.MentoringPaymentDto
-import com.markusw.lambda.video.WaitingConfirmation
+import com.markusw.lambda.video.data.WaitingConfirmation
 import com.markusw.lambda.video.data.CallAccessDto
 import kotlinx.coroutines.flow.Flow
 

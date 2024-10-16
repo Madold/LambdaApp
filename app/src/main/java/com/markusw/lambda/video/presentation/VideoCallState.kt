@@ -1,7 +1,7 @@
 package com.markusw.lambda.video.presentation
 
 import com.markusw.lambda.core.domain.model.User
-import com.markusw.lambda.video.WaitingConfirmation
+import com.markusw.lambda.video.data.WaitingConfirmation
 import io.getstream.video.android.core.Call
 
 data class VideoCallState(
