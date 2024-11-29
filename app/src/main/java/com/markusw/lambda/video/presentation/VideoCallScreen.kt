@@ -6,6 +6,7 @@ import android.Manifest
 import android.app.Activity
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,9 +37,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,6 +61,7 @@ import com.markusw.lambda.core.presentation.components.Button
 import com.markusw.lambda.core.presentation.components.OutlinedButton
 import com.markusw.lambda.core.presentation.components.SmallButton
 import com.markusw.lambda.core.utils.ext.pop
+import com.markusw.lambda.video.presentation.components.ToggleRecordCallAction
 import com.markusw.lambda.video.presentation.components.ToggleScreenShareAction
 import com.markusw.lambda.video.presentation.components.WaitingConfirmationItem
 import com.spr.jetpack_loading.components.indicators.LineSpinFadeLoaderIndicator
@@ -75,6 +80,8 @@ import io.getstream.video.android.compose.ui.components.call.controls.actions.To
 import io.getstream.video.android.compose.ui.components.call.controls.actions.ToggleMicrophoneAction
 import io.getstream.video.android.core.Call
 import io.getstream.video.android.core.call.state.LeaveCall
+import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 @Composable
 fun VideoCallScreen(
@@ -99,10 +106,15 @@ fun VideoCallScreen(
     var isContextMenuVisible by rememberSaveable {
         mutableStateOf(false)
     }
-
+    val coroutineScope = rememberCoroutineScope()
     val isMicrophoneEnabled = state.call?.microphone?.isEnabled?.collectAsState()
     val isCameraEnabled = state.call?.camera?.isEnabled?.collectAsState()
     val isScreenSharing = state.call?.screenShare?.isEnabled?.collectAsState()
+    val isRecording = state.call?.state?.recording?.collectAsState()
+
+    LaunchedEffect(isRecording) {
+        Log.d("StreamVideoClient", isRecording.toString())
+    }
 
     Scaffold(modifier = modifier) { innerPadding ->
         Box(
@@ -327,7 +339,6 @@ fun VideoCallScreen(
                                                 mediaProjectionLauncher.launch(mediaProjectionManager.createScreenCaptureIntent())
                                             }
                                         )
-
                                     }
                                 },
                                 appBarContent = {
@@ -342,6 +353,22 @@ fun VideoCallScreen(
                                             call = it,
                                             title = ""
                                         )
+
+                                        if (isRecording?.value == true) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                        .clip(CircleShape)
+                                                        .background(Color.Red)
+                                                )
+
+                                                Text(text = "Grabando", color = Color.White)
+                                            }
+                                        }
 
                                         Column {
                                             LeaveCallAction {
@@ -552,6 +579,25 @@ fun VideoCallScreen(
                                                 }
                                             )
 
+                                            ToggleRecordCallAction(
+                                                isRecording = isRecording?.value ?: false,
+                                                onCallAction = { action ->
+                                                    coroutineScope.launch {
+                                                        if (isRecording?.value == false) {
+                                                            call.startRecording().onSuccess {
+                                                                Log.d("StreamVideoClient", "Recording started success")
+                                                            }.onError {
+                                                                Log.d("StreamVideoClient", it.message)
+                                                            }
+                                                            Log.d("StreamVideoClient", "Recording")
+                                                        } else {
+                                                            call.stopRecording()
+                                                        }
+                                                    }
+                                                }
+
+                                            )
+
                                             ToggleScreenShareAction(
                                                 isScreenSharing = isScreenSharing?.value ?: false,
                                                 onCallAction = { action ->
@@ -579,6 +625,22 @@ fun VideoCallScreen(
                                                 call = it,
                                                 title = ""
                                             )
+
+                                            /*if (isRecording?.value == true) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(24.dp)
+                                                            .clip(CircleShape)
+                                                            .background(Color.Red)
+                                                    )
+
+                                                    Text(text = "Grabando", color = Color.White)
+                                                }
+                                            }*/
 
                                             Column {
                                                 LeaveCallAction {

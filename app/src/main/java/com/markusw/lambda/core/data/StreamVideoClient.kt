@@ -1,6 +1,7 @@
 package com.markusw.lambda.core.data
 
 import android.content.Context
+import android.util.Log
 import com.markusw.lambda.core.domain.VideoClient
 import com.markusw.lambda.core.utils.Result
 import io.getstream.video.android.core.Call
@@ -27,7 +28,7 @@ class StreamVideoClient(
 
             client = StreamVideoBuilder(
                 context = context,
-                apiKey = "jb7mrpq97r5p",
+                apiKey = "y8ybwab9286t",
                 user = StreamSdkUser(
                     id = userId,
                     name = username,
@@ -47,6 +48,14 @@ class StreamVideoClient(
         return try {
             call?.end()
             resetVideoClient()
+
+            val result = call?.listRecordings()
+            result?.onSuccess { response ->
+                response.recordings.forEach { recording ->
+                    Log.d(TAG, recording.url)
+                }
+            }
+
             Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
