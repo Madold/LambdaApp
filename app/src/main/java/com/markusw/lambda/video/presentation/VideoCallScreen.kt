@@ -81,7 +81,6 @@ import io.getstream.video.android.compose.ui.components.call.controls.actions.To
 import io.getstream.video.android.core.Call
 import io.getstream.video.android.core.call.state.LeaveCall
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 @Composable
 fun VideoCallScreen(
