@@ -584,12 +584,7 @@ fun VideoCallScreen(
                                                 onCallAction = { action ->
                                                     coroutineScope.launch {
                                                         if (isRecording?.value == false) {
-                                                            call.startRecording().onSuccess {
-                                                                Log.d("StreamVideoClient", "Recording started success")
-                                                            }.onError {
-                                                                Log.d("StreamVideoClient", it.message)
-                                                            }
-                                                            Log.d("StreamVideoClient", "Recording")
+                                                            call.startRecording()
                                                         } else {
                                                             call.stopRecording()
                                                         }
@@ -625,22 +620,6 @@ fun VideoCallScreen(
                                                 call = it,
                                                 title = ""
                                             )
-
-                                            /*if (isRecording?.value == true) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                                ) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .size(24.dp)
-                                                            .clip(CircleShape)
-                                                            .background(Color.Red)
-                                                    )
-
-                                                    Text(text = "Grabando", color = Color.White)
-                                                }
-                                            }*/
 
                                             Column {
                                                 LeaveCallAction {
