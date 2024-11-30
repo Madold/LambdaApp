@@ -164,6 +164,9 @@ class VideoCallViewModel @Inject constructor(
                         }
 
                         is Result.Success -> {
+
+                            val emails = remoteDatabase.getUserEmailsFromRoom(state.value.roomId ?: "1234")
+
                             remoteDatabase.finishCall(state.value.roomId ?: "1234")
                             remoteDatabase.deleteMentoringById(state.value.roomId ?: "1234")
                         }

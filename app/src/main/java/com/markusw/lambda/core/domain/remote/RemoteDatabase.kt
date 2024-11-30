@@ -35,4 +35,5 @@ interface RemoteDatabase {
     suspend fun acceptCall(dto: CallAccessDto)
     suspend fun rejectCall(dto: CallAccessDto)
     suspend fun startCall(roomId: String)
+    suspend fun getUserEmailsFromRoom(roomId: String): List<String>
 }

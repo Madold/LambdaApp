@@ -1,6 +1,7 @@
 package com.markusw.lambda.core.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObjects
 import com.markusw.lambda.core.data.model.MentoringDto
 import com.markusw.lambda.core.domain.model.Donation
 import com.markusw.lambda.core.domain.model.Mentoring
@@ -350,6 +351,26 @@ class FireStoreDatabase(
                     "state" to "running"
                 )
             )
+    }
+
+    override suspend fun getUserEmailsFromRoom(roomId: String): List<String> {
+        val userIds =  firestore
+            .collection(ATTENDS_COLLECTION)
+            .whereEqualTo("roomId", roomId)
+            .get()
+            .await()
+            .toObjects(AttendanceDto::class.java)
+            .map { it.userId }
+
+
+        val users = firestore
+            .collection(USERS_COLLECTIONS)
+            .whereIn("id", userIds)
+            .get()
+            .await()
+            .toObjects(User::class.java)
+
+        return users.map { it.email }
     }
 
 
