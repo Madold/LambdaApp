@@ -1,5 +1,6 @@
 package com.markusw.lambda.core.data.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.markusw.lambda.core.data.model.MentoringDto
@@ -356,12 +357,11 @@ class FireStoreDatabase(
     override suspend fun getUserEmailsFromRoom(roomId: String): List<String> {
         val userIds =  firestore
             .collection(ATTENDS_COLLECTION)
-            .whereEqualTo("roomId", roomId)
+            .whereEqualTo("mentoringId", roomId)
             .get()
             .await()
             .toObjects(AttendanceDto::class.java)
             .map { it.userId }
-
 
         val users = firestore
             .collection(USERS_COLLECTIONS)
