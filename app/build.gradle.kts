@@ -56,6 +56,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.com.squareup.retrofit2)
+    implementation(libs.com.squareup.retrofit2.converter.gson)
     implementation(libs.stream.chat)
     implementation(libs.stream.chat.offline)
     implementation(libs.material.icons.extended)

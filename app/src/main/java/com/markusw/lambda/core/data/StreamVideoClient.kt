@@ -48,17 +48,19 @@ class StreamVideoClient(
         return try {
             call?.end()
             resetVideoClient()
-
-            val result = call?.listRecordings()
-            result?.onSuccess { response ->
-                response.recordings.forEach { recording ->
-                    Log.d(TAG, recording.url)
-                }
-            }
-
             Result.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
+            Result.Error(e.message.toString())
+        }
+    }
+
+    override suspend fun listRecordings(roomId: String): Result<List<String>> {
+        return try {
+            val result = call?.listRecordings()
+
+            return Result.Success(result?.getOrThrow()?.recordings?.map { it.url } ?: emptyList())
+        } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
     }

@@ -10,6 +10,7 @@ import com.markusw.lambda.core.domain.VideoClient
 import com.markusw.lambda.core.domain.model.User
 import com.markusw.lambda.core.domain.remote.RemoteDatabase
 import com.markusw.lambda.core.utils.Result
+import com.markusw.lambda.network.data.api.LambdaBackendService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +28,7 @@ class VideoCallViewModel @Inject constructor(
     private val remoteDatabase: RemoteDatabase,
     private val videoClient: VideoClient,
     private val chatClient: ChatClient,
+    private val lambdaBackendService: LambdaBackendService,
     authService: AuthService,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -165,10 +167,54 @@ class VideoCallViewModel @Inject constructor(
 
                         is Result.Success -> {
 
-                            val emails = remoteDatabase.getUserEmailsFromRoom(state.value.roomId ?: "1234")
+                            when (val result = lambdaBackendService.endTranscription(state.value.roomId ?: "1234")) {
+                                is Result.Error -> {
+                                    Log.d(TAG, "Error ending transcription ${result.message}")
+                                }
+                                is Result.Success -> {
+                                    Log.d(TAG, "Ending transcription successfully")
+                                }
+                            }
 
-                            //remoteDatabase.finishCall(state.value.roomId ?: "1234")
-                            //remoteDatabase.deleteMentoringById(state.value.roomId ?: "1234")
+                            val emails = remoteDatabase.getUserEmailsFromRoom(state.value.roomId ?: "1234")
+                            viewModelScope.launch(Dispatchers.IO) {
+                                when (val result = videoClient.listRecordings(state.value.roomId ?: "1234")) {
+                                    is Result.Error -> {
+                                        Log.d(TAG, "Error listing recordings ${result.message}")
+                                    }
+                                    is Result.Success -> {
+                                        val videos = result.data
+
+                                        if (emails.isNotEmpty() && videos?.isNotEmpty() == true) {
+                                            when (val result = lambdaBackendService.sendCallInfoByEmail(
+                                                to = emails,
+                                                urlVideos = videos,
+                                                roomId = state.value.roomId ?: "1234"
+                                            )) {
+                                                is Result.Error -> {
+                                                    Log.d(TAG, "Error sending call info by email ${result.message}")
+                                                }
+                                                is Result.Success -> {
+                                                    Log.d(TAG, "Sending call info by email successfully")
+                                                }
+                                            }
+                                            return@launch
+                                        }
+
+                                        val error = if (emails.isEmpty()) {
+                                            "Emails empty"
+                                        } else {
+                                            "Recordings empty"
+                                        }
+
+                                        Log.d(TAG, error)
+
+                                    }
+                                }
+                            }
+
+                            remoteDatabase.finishCall(state.value.roomId ?: "1234")
+                            remoteDatabase.deleteMentoringById(state.value.roomId ?: "1234")
                         }
                     }
                 }
@@ -218,6 +264,17 @@ class VideoCallViewModel @Inject constructor(
                 }
 
                 is Result.Success -> {
+
+                    when (val result = lambdaBackendService.startTranscription(state.value.roomId ?: "1234")) {
+                        is Result.Error -> {
+                            Log.d(TAG, "Error starting transcription ${result.message}")
+                        }
+                        is Result.Success -> {
+                            Log.d(TAG, "Starting transcription successfully")
+                        }
+                    }
+
+
                     _state.update {
                         it.copy(
                             call = result.data,

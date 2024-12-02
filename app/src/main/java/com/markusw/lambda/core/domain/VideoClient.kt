@@ -10,4 +10,5 @@ interface VideoClient {
     fun getCall(): Call?
     fun callToRoom(roomId: String)
     suspend fun finishCall(): Result<Unit>
+    suspend fun listRecordings(roomId: String): Result<List<String>>
 }
